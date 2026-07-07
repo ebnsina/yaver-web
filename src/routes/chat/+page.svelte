@@ -102,7 +102,7 @@
 <div class="flex h-screen flex-col bg-gray-50">
 	<Header active="chat" />
 
-	<main class="mx-auto flex w-full max-w-3xl flex-1 flex-col overflow-hidden px-4">
+	<main class="mx-auto flex w-full max-w-6xl flex-1 flex-col overflow-hidden px-4">
 		<!-- toolbar -->
 		<div class="flex shrink-0 items-center justify-between py-3">
 			<div>

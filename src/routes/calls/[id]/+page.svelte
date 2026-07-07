@@ -44,7 +44,7 @@
 <div class="min-h-screen bg-gray-50">
 	<Header active="calls" />
 
-	<main class="mx-auto max-w-3xl px-6 py-10">
+	<main class="mx-auto max-w-6xl px-6 py-10">
 		<a href="/calls" class="text-sm text-gray-500 hover:text-gray-900">← Calls</a>
 
 		{#if loading}

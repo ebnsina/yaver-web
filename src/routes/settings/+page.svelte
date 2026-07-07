@@ -182,7 +182,7 @@
 <div class="min-h-screen bg-gray-50">
 	<Header active="settings" />
 
-	<main class="mx-auto max-w-3xl space-y-6 px-6 py-10">
+	<main class="mx-auto max-w-6xl space-y-6 px-6 py-10">
 		<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Settings</h1>
 
 		{#if loading}

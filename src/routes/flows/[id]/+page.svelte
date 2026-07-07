@@ -61,7 +61,7 @@
 <div class="min-h-screen bg-gray-50">
 	<Header active="flows" />
 
-	<main class="mx-auto max-w-3xl px-6 py-10">
+	<main class="mx-auto max-w-6xl px-6 py-10">
 		<a href="/flows" class="text-sm text-gray-500 hover:text-gray-900">← Flows</a>
 
 		{#if loading}
