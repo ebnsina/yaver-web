@@ -72,6 +72,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/calls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Recent calls for the authenticated org */
+        get: operations["listCalls"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events": {
         parameters: {
             query?: never;
@@ -121,6 +138,19 @@ export interface components {
             phone: string;
             email: string;
             name: string;
+        };
+        Call: {
+            id: string;
+            /** @enum {string} */
+            direction: "inbound" | "outbound";
+            /** @enum {string} */
+            status: "queued" | "ringing" | "in_progress" | "completed" | "failed" | "no_answer";
+            result: string;
+            /** Format: date-time */
+            created_at: string;
+        };
+        CallList: {
+            calls: components["schemas"]["Call"][];
         };
         EventRequest: {
             /** @enum {string} */
@@ -250,6 +280,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listCalls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Calls, newest first */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallList"];
                 };
             };
             401: components["responses"]["Unauthorized"];
