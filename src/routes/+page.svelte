@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { isUnauthorized } from '$lib/api/client';
 	import { getSummary, sendTestCall, type Summary } from '$lib/api/calls';
 
 	let summary = $state<Summary | null>(null);
 	let loading = $state(true);
+	let error = $state<string | null>(null);
 
 	let testPhone = $state('');
 	let testDigit = $state('1');
@@ -17,7 +19,10 @@
 
 	$effect(() => {
 		load()
-			.catch(() => goto('/login'))
+			.catch((e) => {
+				if (isUnauthorized(e)) goto('/login');
+				else error = 'Could not load dashboard';
+			})
 			.finally(() => (loading = false));
 	});
 
@@ -52,6 +57,8 @@
 	<main class="mx-auto max-w-6xl px-6 py-10">
 		{#if loading}
 			<p class="text-sm text-gray-500">Loading…</p>
+		{:else if error}
+			<p class="text-sm text-red-600">{error}</p>
 		{:else}
 			<h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
 

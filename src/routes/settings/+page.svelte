@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { isUnauthorized } from '$lib/api/client';
 	import { createApiKey, getWebhook, setWebhook } from '$lib/api/settings';
 
 	let loading = $state(true);
@@ -20,7 +21,9 @@
 				webhookConfigured = c.configured;
 				webhookUrl = c.url ?? '';
 			})
-			.catch(() => goto('/login'))
+			.catch((e) => {
+				if (isUnauthorized(e)) goto('/login');
+			})
 			.finally(() => (loading = false));
 	});
 

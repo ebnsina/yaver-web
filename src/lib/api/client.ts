@@ -10,6 +10,9 @@ import type { paths } from './schema';
 
 export type ApiError = { status: number; error: string };
 
+/** Only a real 401 means "log in again"; network blips / 5xx must NOT sign you out. */
+export const isUnauthorized = (e: unknown): boolean => (e as ApiError | undefined)?.status === 401;
+
 export const api = createClient<paths>({ credentials: 'include' });
 
 /** unwrap turns an openapi-fetch result into data-or-throw(ApiError). */

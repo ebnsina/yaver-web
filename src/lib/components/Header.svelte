@@ -1,15 +1,20 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { me, logout } from '$lib/api/auth';
+	import { isUnauthorized } from '$lib/api/client';
 
 	let { active }: { active: 'dashboard' | 'calls' | 'settings' } = $props();
 
 	let phone = $state('');
+	let menuOpen = $state(false);
 
 	$effect(() => {
 		me()
 			.then((u) => (phone = u.phone))
-			.catch(() => goto('/login'));
+			.catch((e) => {
+				// Only a real 401 signs you out; ignore transient errors.
+				if (isUnauthorized(e)) goto('/login');
+			});
 	});
 
 	async function signOut() {
@@ -58,14 +63,37 @@
 			</div>
 			<a href="/" class="hover:text-gray-900">Docs</a>
 			<a href="/" class="hover:text-gray-900">Help</a>
-			<button
-				onclick={signOut}
-				title={phone ? `Sign out (${phone})` : 'Sign out'}
-				class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300"
-				aria-label="Sign out"
-			>
-				<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 1c-2.5 0-6 1.2-6 3.5V14h12v-1.5C14 10.2 10.5 9 8 9Z"/></svg>
-			</button>
+			<div class="relative">
+				<button
+					onclick={() => (menuOpen = !menuOpen)}
+					class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300"
+					aria-label="Account menu"
+					aria-expanded={menuOpen}
+				>
+					<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 1c-2.5 0-6 1.2-6 3.5V14h12v-1.5C14 10.2 10.5 9 8 9Z"/></svg>
+				</button>
+				{#if menuOpen}
+					<!-- click-away backdrop -->
+					<button
+						class="fixed inset-0 z-10 cursor-default"
+						aria-label="Close menu"
+						onclick={() => (menuOpen = false)}
+					></button>
+					<div
+						class="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+					>
+						<div class="px-3 py-2 text-xs text-gray-400">Signed in as</div>
+						<div class="truncate px-3 pb-2 font-mono text-sm text-gray-900">{phone || '—'}</div>
+						<div class="border-t border-gray-100"></div>
+						<button
+							onclick={signOut}
+							class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+						>
+							Sign out
+						</button>
+					</div>
+				{/if}
+			</div>
 		</div>
 	</div>
 

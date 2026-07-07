@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { isUnauthorized } from '$lib/api/client';
 	import { listCalls, type Call } from '$lib/api/calls';
 
 	let calls = $state<Call[] | null>(null);
@@ -9,7 +10,9 @@
 	$effect(() => {
 		listCalls()
 			.then((c) => (calls = c))
-			.catch(() => goto('/login'))
+			.catch((e) => {
+				if (isUnauthorized(e)) goto('/login');
+			})
 			.finally(() => (loading = false));
 	});
 
