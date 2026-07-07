@@ -33,7 +33,7 @@
 <div class="min-h-screen bg-gray-50">
 	<Header active="inbox" />
 
-	<main class="mx-auto max-w-2xl px-6 py-10">
+	<main class="mx-auto max-w-3xl px-6 py-10">
 		<a href="/inbox" class="text-sm text-gray-500 hover:text-gray-900">← Inbox</a>
 
 		{#if loading}
