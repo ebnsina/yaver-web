@@ -4,7 +4,7 @@
 	import Header from '$lib/components/Header.svelte';
 	import { ArrowLeft, LayoutGrid, Play, Plus, Trash2, Workflow } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
-	import FlowDiagram from '$lib/components/FlowDiagram.svelte';
+	import FlowCanvas from '$lib/components/flow/FlowCanvas.svelte';
 	import { getFlow, updateFlow, simulateFlow, type FlowDetail, type IVRSpec, type Simulation } from '$lib/api/flows';
 
 	let flow = $state<FlowDetail | null>(null);
@@ -207,9 +207,11 @@
 							</select>
 						</div>
 						<div class="mt-4">
-							<FlowDiagram {spec} onselect={focusNode} />
+							<FlowCanvas bind:spec onedit={focusNode} />
 						</div>
-						<p class="mt-2 text-xs text-gray-400">Click a node to edit it. Boxes are colored by kind: blue = waits for a keypress, green = ends the call.</p>
+						<p class="mt-2 text-xs text-gray-400">
+							Drag nodes to arrange · drag from a node's right edge to another to add a branch · change a branch's key with its dropdown · select + press Delete to remove · double-click a node to edit its wording. Blue = waits for a keypress, green = ends the call.
+						</p>
 					{:else}
 					<div class="flex items-center gap-2">
 						<label class="text-sm text-gray-500" for="entry">Starts at</label>

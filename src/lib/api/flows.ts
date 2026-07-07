@@ -11,7 +11,13 @@ export type IVRNode = {
 	result?: string;
 	end?: boolean;
 };
-export type IVRSpec = { entry: string; nodes: Record<string, IVRNode> };
+// `layout` is builder-only canvas positions; the API stores it as opaque JSON
+// (the IVR engine ignores it), so node placement round-trips.
+export type IVRSpec = {
+	entry: string;
+	nodes: Record<string, IVRNode>;
+	layout?: Record<string, { x: number; y: number }>;
+};
 
 export type FlowDetail = {
 	id: string;
