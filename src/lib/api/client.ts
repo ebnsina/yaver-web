@@ -1,25 +1,25 @@
-// Minimal typed API client. Talks to the Go API through the Vite proxy (dev) or
-// the reverse proxy (prod), same-origin, with the session cookie included.
+// Typed API client generated from the Go OpenAPI spec.
 //
-// This is hand-written for the auth slice; it will be replaced by a client
-// generated from the Go OpenAPI spec once the API emits one.
+// `schema.d.ts` is produced by `pnpm gen:api` (openapi-typescript against the
+// running API's /openapi.yaml). openapi-fetch gives fully-typed requests and
+// responses derived from that schema. Same-origin via the Vite dev proxy, with
+// the session cookie included.
+
+import createClient from 'openapi-fetch';
+import type { paths } from './schema';
 
 export type ApiError = { status: number; error: string };
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-	const res = await fetch(path, {
-		...init,
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) }
-	});
-	const body = await res.json().catch(() => ({}));
-	if (!res.ok) {
-		throw { status: res.status, error: body.error ?? 'request failed' } satisfies ApiError;
+export const api = createClient<paths>({ credentials: 'include' });
+
+/** unwrap turns an openapi-fetch result into data-or-throw(ApiError). */
+export async function unwrap<T>(
+	p: Promise<{ data?: T; error?: unknown; response: Response }>
+): Promise<T> {
+	const { data, error, response } = await p;
+	if (error || !response.ok) {
+		const e = error as { error?: string } | undefined;
+		throw { status: response.status, error: e?.error ?? 'request failed' } satisfies ApiError;
 	}
-	return body as T;
+	return data as T;
 }
-
-export const get = <T>(path: string) => request<T>(path, { method: 'GET' });
-
-export const post = <T>(path: string, data?: unknown) =>
-	request<T>(path, { method: 'POST', body: data === undefined ? undefined : JSON.stringify(data) });
