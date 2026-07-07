@@ -106,6 +106,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/settings/call-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The org's calling window + retry policy */
+        get: operations["getCallPolicy"];
+        /** Update the calling window + retry policy */
+        put: operations["saveCallPolicy"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/chat/messages": {
         parameters: {
             query?: never;
@@ -210,6 +228,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/chat/conversations/{id}/summarize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate (or refresh) the AI insight for a conversation
+         * @description Distills the transcript into a summary, outcome, sentiment, and suggested next action. Provider-agnostic; the result is cached and returned on the conversation detail. Re-running overwrites the prior insight.
+         */
+        post: operations["summarizeConversation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/chat/conversations/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Transition a conversation (open | handling | closed)
+         * @description Setting "handling" hands the thread to a human — the assistant stops auto-replying so it doesn't talk over the agent. "open" returns it to the bot; "closed" ends it.
+         */
+        put: operations["setConversationStatus"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/chat/conversations/{id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post a human agent's reply (takes the conversation over)
+         * @description Records the agent's message (role "agent"), marks the conversation "handling", and delivers the reply out over the messaging channel (WhatsApp/Messenger). Web-widget threads have no external transport.
+         */
+        post: operations["agentReply"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/campaigns": {
         parameters: {
             query?: never;
@@ -228,6 +306,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/campaigns/{id}/recipients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import a recipient list from CSV (phone[,name] per row)
+         * @description Rows with an invalid phone (including a header row) are skipped; phones are normalized and deduped. A campaign with recipients dials that list; one with none falls back to all callable customers.
+         */
+        post: operations["importCampaignRecipients"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/campaigns/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Schedule a draft campaign to auto-start at a future time */
+        post: operations["scheduleCampaign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/campaigns/{id}/start": {
         parameters: {
             query?: never;
@@ -237,7 +352,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Dispatch calls to all callable customers */
+        /** Dispatch the campaign now (recipients, or all callable customers) */
         post: operations["startCampaign"];
         delete?: never;
         options?: never;
@@ -290,7 +405,48 @@ export interface paths {
         /** The org's flows */
         get: operations["listFlows"];
         put?: never;
+        /**
+         * Create a flow (no-code builder / templates)
+         * @description Names are unique per org among active flows, so ingest can route an event type to a flow by name (e.g. cart_abandoned → cart_recovery).
+         */
+        post: operations["createFlow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/flows/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Built-in starter flows the no-code builder can clone */
+        get: operations["listFlowTemplates"];
+        put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/flows/simulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dry-run an IVR spec against keypad inputs (in-browser simulator)
+         * @description Runs the deterministic IVR engine over a spec and a sequence of inputs (each a digit or the literal "timeout"), returning every step and the terminal outcome. No telephony, credits, or persistence.
+         */
+        post: operations["simulateFlow"];
         delete?: never;
         options?: never;
         head?: never;
@@ -360,6 +516,43 @@ export interface paths {
         get: operations["getSummary"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/analytics/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cross-channel dashboard rollup (calls, conversations, credits) */
+        get: operations["getAnalyticsOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reports/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask a natural-language question over your metrics (AI custom reports)
+         * @description Provider-agnostic. Returns a plain-language answer grounded in the org's current call, conversation, and credit metrics, plus the underlying data.
+         */
+        post: operations["askReport"];
         delete?: never;
         options?: never;
         head?: never;
@@ -462,7 +655,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Ingest a merchant store event (triggers a call for order_placed) */
+        /** Ingest a merchant store event (routes to the matching flow) */
         post: operations["ingestEvent"];
         delete?: never;
         options?: never;
@@ -514,6 +707,41 @@ export interface components {
             today: number;
             /** @description percent 0-100 */
             confirmation_rate: number;
+        };
+        AnalyticsOverview: {
+            calls: {
+                total: number;
+                confirmed: number;
+                cancelled: number;
+                today: number;
+                /** @description percent 0-100 */
+                confirmation_rate: number;
+            };
+            conversations: {
+                total: number;
+                today: number;
+                resolved: number;
+                pending: number;
+                sale: number;
+                needs_human: number;
+                /** @description percent 0-100 */
+                resolution_rate: number;
+            };
+            credits: {
+                balance: number;
+                spent_today: number;
+                spent_30d: number;
+            };
+        };
+        CallPolicy: {
+            /** @description local hour calls may start, inclusive (0-23) */
+            window_start: number;
+            /** @description local hour calls must stop, exclusive (1-24) */
+            window_end: number;
+            /** @example Asia/Dhaka */
+            timezone: string;
+            /** @description retry attempts for a failed call (0-10) */
+            max_retries: number;
         };
         TestCallRequest: {
             phone: string;
@@ -593,23 +821,38 @@ export interface components {
         };
         ChatMessage: {
             /** @enum {string} */
-            role: "user" | "assistant" | "system";
+            role: "user" | "assistant" | "agent" | "system";
             content: string;
             /** Format: date-time */
             created_at: string;
         };
         MessageList: {
             messages: components["schemas"]["ChatMessage"][];
+            /** @description The cached AI insight, present once one has been generated. */
+            insight?: components["schemas"]["ConversationInsight"] | null;
+        };
+        ConversationInsight: {
+            summary: string;
+            /** @enum {string} */
+            outcome: "resolved" | "pending" | "sale" | "needs_human" | "unknown";
+            /** @enum {string} */
+            sentiment: "positive" | "neutral" | "negative";
+            next_action: string;
+            /** Format: date-time */
+            created_at: string;
         };
         Campaign: {
             id: string;
             name: string;
-            status: string;
+            /** @enum {string} */
+            status: "draft" | "scheduled" | "completed";
             target_count: number;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
             started_at?: string | null;
+            /** Format: date-time */
+            scheduled_at?: string | null;
         };
         CampaignList: {
             campaigns: components["schemas"]["Campaign"][];
@@ -671,8 +914,11 @@ export interface components {
             created_at: string;
         };
         EventRequest: {
-            /** @enum {string} */
-            event_type: "order_placed" | "order_cancelled" | "abandoned_cart";
+            /**
+             * @description Routed to a flow by name: order_placed→order_confirm, abandoned_cart→cart_recovery, out_for_delivery→delivery_reminder. Other types are stored but trigger no call.
+             * @enum {string}
+             */
+            event_type: "order_placed" | "order_cancelled" | "abandoned_cart" | "out_for_delivery";
             /** @description Merchant-side unique id (idempotency) */
             event_id: string;
             customer?: {
@@ -846,6 +1092,51 @@ export interface operations {
             };
             401: components["responses"]["Unauthorized"];
             404: components["responses"]["BadRequest"];
+        };
+    };
+    getCallPolicy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Call policy */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallPolicy"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    saveCallPolicy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CallPolicy"];
+            };
+        };
+        responses: {
+            /** @description Saved */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
         };
     };
     sendChatMessage: {
@@ -1049,6 +1340,94 @@ export interface operations {
             404: components["responses"]["BadRequest"];
         };
     };
+    summarizeConversation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The generated insight */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationInsight"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["BadRequest"];
+        };
+    };
+    setConversationStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    status: "open" | "handling" | "closed";
+                };
+            };
+        };
+        responses: {
+            /** @description Updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["BadRequest"];
+        };
+    };
+    agentReply: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    text: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Stored (and delivered when the channel supports it) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: string;
+                        delivered?: boolean;
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["BadRequest"];
+        };
+    };
     listCampaigns: {
         parameters: {
             query?: never;
@@ -1098,6 +1477,76 @@ export interface operations {
             };
             400: components["responses"]["BadRequest"];
             401: components["responses"]["Unauthorized"];
+        };
+    };
+    importCampaignRecipients: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "text/csv": string;
+            };
+        };
+        responses: {
+            /** @description Imported */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        added: number;
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["BadRequest"];
+        };
+    };
+    scheduleCampaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: date-time
+                     * @description RFC3339, must be in the future
+                     */
+                    at: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Scheduled */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: string;
+                        /** Format: date-time */
+                        at?: string;
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["BadRequest"];
         };
     };
     startCampaign: {
@@ -1215,6 +1664,134 @@ export interface operations {
                     "application/json": components["schemas"]["FlowList"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    createFlow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @example cart_recovery */
+                    name: string;
+                    /**
+                     * @default ivr
+                     * @enum {string}
+                     */
+                    type: "ivr" | "chat";
+                    /** @enum {string} */
+                    channel?: "voice" | "chat";
+                    /** @default en */
+                    locale?: string;
+                    /** @description IVR keypad spec (required for type=ivr) */
+                    spec?: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            /** @description A flow with that name already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFlowTemplates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Templates */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        templates: {
+                            name?: string;
+                            title?: string;
+                            description?: string;
+                            channel?: string;
+                            type?: string;
+                            locale?: string;
+                            spec?: {
+                                [key: string]: unknown;
+                            };
+                        }[];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    simulateFlow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    spec: {
+                        [key: string]: unknown;
+                    };
+                    inputs?: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Simulation trace + outcome */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        ended: boolean;
+                        result?: string;
+                        status?: string;
+                        steps: {
+                            node?: string;
+                            /** @enum {string} */
+                            kind?: "say" | "say_gather" | "hangup";
+                            awaits_input?: boolean;
+                            say?: {
+                                [key: string]: unknown;
+                            };
+                        }[];
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
             401: components["responses"]["Unauthorized"];
         };
     };
@@ -1342,6 +1919,59 @@ export interface operations {
                     "application/json": components["schemas"]["Summary"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getAnalyticsOverview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Overview */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsOverview"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    askReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @example which channel recovered the most this week? */
+                    question: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Answer */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        answer: string;
+                        data: components["schemas"]["AnalyticsOverview"];
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
             401: components["responses"]["Unauthorized"];
         };
     };

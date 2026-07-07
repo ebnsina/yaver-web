@@ -24,8 +24,13 @@
 	<Header active="flows" />
 
 	<main class="mx-auto max-w-6xl px-6 py-10">
-		<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Flows</h1>
-		<p class="mt-1 text-sm text-gray-500">What your calls say and how they branch.</p>
+		<div class="flex items-start justify-between">
+			<div>
+				<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Flows</h1>
+				<p class="mt-1 text-sm text-gray-500">What your calls say and how they branch.</p>
+			</div>
+			<a href="/flows/new" class="btn-primary">New flow</a>
+		</div>
 
 		{#if loading}
 			<p class="mt-4 text-sm text-gray-500">Loading…</p>
