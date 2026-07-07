@@ -23,7 +23,10 @@ export default defineConfig({
 			'/v1': {
 				target: process.env.VITE_API_TARGET ?? 'http://localhost:8080',
 				changeOrigin: true
-			}
+			},
+			// Widget script + its public endpoint, so the embed preview works in dev.
+			'/widget.js': { target: process.env.VITE_API_TARGET ?? 'http://localhost:8080', changeOrigin: true },
+			'/public': { target: process.env.VITE_API_TARGET ?? 'http://localhost:8080', changeOrigin: true }
 		}
 	}
 });

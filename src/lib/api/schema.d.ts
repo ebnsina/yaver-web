@@ -313,6 +313,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/settings/publishable-key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mint a publishable (yvr_pk_) key for the embeddable widget */
+        post: operations["createPublishableKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/settings/api-keys": {
         parameters: {
             query?: never;
@@ -427,6 +444,8 @@ export interface components {
         ApiKeyInfo: {
             prefix: string;
             name: string;
+            /** @enum {string} */
+            kind: "secret" | "publishable";
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -1092,6 +1111,27 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    createPublishableKey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Publishable key (shown once) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyResult"];
+                };
+            };
             401: components["responses"]["Unauthorized"];
         };
     };

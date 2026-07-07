@@ -3,7 +3,14 @@
 	import Header from '$lib/components/Header.svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
-	import { createApiKey, getWebhook, setWebhook, renameOrg, listApiKeys } from '$lib/api/settings';
+	import {
+		createApiKey,
+		createPublishableKey,
+		getWebhook,
+		setWebhook,
+		renameOrg,
+		listApiKeys
+	} from '$lib/api/settings';
 
 	let loading = $state(true);
 
@@ -11,7 +18,18 @@
 	let orgBusy = $state(false);
 	let orgSaved = $state(false);
 
-	let keys = $state<{ prefix: string; created_at: string }[]>([]);
+	let keys = $state<{ prefix: string; kind: string; created_at: string }[]>([]);
+
+	// Chat widget (publishable key)
+	let pubKey = $state<string | null>(null); // full key, shown once after minting
+	let pubBusy = $state(false);
+	let previewLoaded = $state(false);
+	const hasPublishable = $derived(keys.some((k) => k.kind === 'publishable'));
+	const widgetOrigin =
+		typeof window !== 'undefined' ? window.location.origin : 'https://your-api.example';
+	const snippet = $derived(
+		`<script src="${widgetOrigin}/widget.js" data-key="${pubKey ?? 'yvr_pk_…'}"><\/script>`
+	);
 
 	let webhookUrl = $state('');
 	let webhookConfigured = $state(false);
@@ -57,6 +75,26 @@
 		} finally {
 			keyBusy = false;
 		}
+	}
+
+	async function generatePublishable() {
+		pubBusy = true;
+		try {
+			pubKey = (await createPublishableKey()).api_key;
+			keys = await listApiKeys();
+		} finally {
+			pubBusy = false;
+		}
+	}
+
+	// Inject the real widget onto this page so you can try it live.
+	function loadPreview() {
+		if (!pubKey || previewLoaded) return;
+		const s = document.createElement('script');
+		s.src = '/widget.js';
+		s.setAttribute('data-key', pubKey);
+		document.body.appendChild(s);
+		previewLoaded = true;
 	}
 
 	async function saveWebhook(e: SubmitEvent) {
@@ -130,11 +168,38 @@
 					<ul class="mt-4 divide-y divide-gray-100 border-t border-gray-100 text-sm">
 						{#each keys as k (k.prefix)}
 							<li class="flex items-center justify-between py-2">
-								<code class="font-mono text-gray-700">{k.prefix}…</code>
+								<span class="flex items-center gap-2">
+									<code class="font-mono text-gray-700">{k.prefix}…</code>
+									<span class="badge {k.kind === 'publishable' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'}">{k.kind}</span>
+								</span>
 								<span class="text-xs text-gray-400">{new Date(k.created_at).toLocaleDateString()}</span>
 							</li>
 						{/each}
 					</ul>
+				{/if}
+			</section>
+
+			<!-- Chat widget -->
+			<section class="card p-6">
+				<h2 class="text-sm font-semibold text-gray-900">Chat widget</h2>
+				<p class="mt-1 text-sm text-gray-500">
+					Drop the AI chat onto any website with one line. Uses a publishable key (safe to expose).
+				</p>
+				<button onclick={generatePublishable} disabled={pubBusy} class="mt-4 btn-primary">
+					{pubBusy ? 'Generating…' : hasPublishable ? 'Regenerate publishable key' : 'Generate publishable key'}
+				</button>
+
+				{#if pubKey}
+					{@render reveal('Publishable key', pubKey)}
+					<p class="mt-5 text-xs font-medium uppercase tracking-wider text-gray-400">Embed snippet</p>
+					<pre class="mt-2 overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-800"><code>{snippet}</code></pre>
+					<button onclick={loadPreview} disabled={previewLoaded} class="btn-secondary mt-3">
+						{previewLoaded ? 'Preview loaded → look bottom-right' : 'Load live preview'}
+					</button>
+				{:else if hasPublishable}
+					<p class="mt-3 text-sm text-gray-500">
+						A publishable key already exists. Regenerate to reveal a full key for embedding.
+					</p>
 				{/if}
 			</section>
 

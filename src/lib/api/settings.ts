@@ -8,6 +8,8 @@ export const renameOrg = (name: string) =>
 
 export const createApiKey = () => unwrap(api.POST('/v1/settings/api-keys'));
 
+export const createPublishableKey = () => unwrap(api.POST('/v1/settings/publishable-key'));
+
 export const listApiKeys = async () => (await unwrap(api.GET('/v1/settings/api-keys'))).keys;
 
 export const getWebhook = () => unwrap(api.GET('/v1/settings/webhook'));
