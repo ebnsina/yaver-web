@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { me, logout, type Me } from '$lib/api/auth';
+	import Header from '$lib/components/Header.svelte';
 	import { getSummary, sendTestCall, type Summary } from '$lib/api/calls';
 
-	let user = $state<Me | null>(null);
 	let summary = $state<Summary | null>(null);
 	let loading = $state(true);
 
-	// send-test-call widget
 	let testPhone = $state('');
 	let testDigit = $state('1');
 	let sending = $state(false);
@@ -18,19 +16,10 @@
 	}
 
 	$effect(() => {
-		me()
-			.then((u) => {
-				user = u;
-				return load();
-			})
+		load()
 			.catch(() => goto('/login'))
 			.finally(() => (loading = false));
 	});
-
-	async function signOut() {
-		await logout();
-		await goto('/login');
-	}
 
 	async function send(e: SubmitEvent) {
 		e.preventDefault();
@@ -39,7 +28,7 @@
 		try {
 			const r = await sendTestCall(testPhone, testDigit);
 			lastResult = r.result;
-			await load(); // refresh tiles
+			await load();
 		} finally {
 			sending = false;
 		}
@@ -58,27 +47,12 @@
 </script>
 
 <div class="min-h-screen bg-gray-50">
-	<header class="border-b border-gray-200 bg-white">
-		<div class="mx-auto flex max-w-5xl items-center gap-6 px-6 py-4">
-			<span class="text-lg font-semibold text-gray-900">Yaver</span>
-			{#if user}
-				<nav class="flex flex-1 gap-4 text-sm">
-					<a href="/" class="font-medium text-gray-900">Dashboard</a>
-					<a href="/calls" class="text-gray-500 hover:text-gray-900">Calls</a>
-					<a href="/settings" class="text-gray-500 hover:text-gray-900">Settings</a>
-				</nav>
-				<div class="flex items-center gap-4 text-sm">
-					<span class="text-gray-500">{user.phone}</span>
-					<button onclick={signOut} class="text-gray-700 hover:text-gray-900">Sign out</button>
-				</div>
-			{/if}
-		</div>
-	</header>
+	<Header active="dashboard" />
 
-	<main class="mx-auto max-w-5xl px-6 py-10">
+	<main class="mx-auto max-w-6xl px-6 py-10">
 		{#if loading}
 			<p class="text-sm text-gray-500">Loading…</p>
-		{:else if user}
+		{:else}
 			<h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
 
 			<div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -118,7 +92,7 @@
 						{sending ? 'Calling…' : 'Send'}
 					</button>
 					{#if lastResult}
-						<span class="text-sm text-green-700">→ {lastResult}</span>
+						<span class="font-mono text-sm text-green-700">→ {lastResult}</span>
 					{/if}
 				</form>
 			</section>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import Header from '$lib/components/Header.svelte';
 	import { createApiKey, getWebhook, setWebhook } from '$lib/api/settings';
 
 	let loading = $state(true);
@@ -55,16 +56,7 @@
 {/snippet}
 
 <div class="min-h-screen bg-gray-50">
-	<header class="border-b border-gray-200 bg-white">
-		<div class="mx-auto flex max-w-5xl items-center gap-6 px-6 py-4">
-			<a href="/" class="text-lg font-semibold text-gray-900">Yaver</a>
-			<nav class="flex gap-4 text-sm">
-				<a href="/" class="text-gray-500 hover:text-gray-900">Dashboard</a>
-				<a href="/calls" class="text-gray-500 hover:text-gray-900">Calls</a>
-				<a href="/settings" class="font-medium text-gray-900">Settings</a>
-			</nav>
-		</div>
-	</header>
+	<Header active="settings" />
 
 	<main class="mx-auto max-w-2xl space-y-6 px-6 py-10">
 		<h1 class="text-2xl font-semibold text-gray-900">Settings</h1>

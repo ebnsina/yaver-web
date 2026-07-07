@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import Header from '$lib/components/Header.svelte';
 	import { listCalls, type Call } from '$lib/api/calls';
 
 	let calls = $state<Call[] | null>(null);
@@ -23,18 +24,9 @@
 </script>
 
 <div class="min-h-screen bg-gray-50">
-	<header class="border-b border-gray-200 bg-white">
-		<div class="mx-auto flex max-w-5xl items-center gap-6 px-6 py-4">
-			<a href="/" class="text-lg font-semibold text-gray-900">Yaver</a>
-			<nav class="flex gap-4 text-sm">
-				<a href="/" class="text-gray-500 hover:text-gray-900">Dashboard</a>
-				<a href="/calls" class="font-medium text-gray-900">Calls</a>
-				<a href="/settings" class="text-gray-500 hover:text-gray-900">Settings</a>
-			</nav>
-		</div>
-	</header>
+	<Header active="calls" />
 
-	<main class="mx-auto max-w-5xl px-6 py-10">
+	<main class="mx-auto max-w-6xl px-6 py-10">
 		<h1 class="text-2xl font-semibold text-gray-900">Calls</h1>
 
 		{#if loading}
@@ -55,7 +47,10 @@
 					</thead>
 					<tbody class="divide-y divide-gray-100">
 						{#each calls as c (c.id)}
-							<tr class="hover:bg-gray-50">
+							<tr
+								class="cursor-pointer hover:bg-gray-50"
+								onclick={() => goto(`/calls/${c.id}`)}
+							>
 								<td class="px-4 py-3 font-mono text-xs text-gray-500">{c.id.slice(0, 16)}…</td>
 								<td class="px-4 py-3 text-gray-700">{c.direction}</td>
 								<td class="px-4 py-3">

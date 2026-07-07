@@ -89,6 +89,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/calls/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A single call (org-scoped) */
+        get: operations["getCall"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/analytics/summary": {
         parameters: {
             query?: never;
@@ -254,6 +271,16 @@ export interface components {
         CallList: {
             calls: components["schemas"]["Call"][];
         };
+        CallDetail: {
+            id: string;
+            direction: string;
+            status: string;
+            result: string;
+            flow_id: string;
+            provider_call_id: string;
+            /** Format: date-time */
+            created_at: string;
+        };
         EventRequest: {
             /** @enum {string} */
             event_type: "order_placed" | "order_cancelled" | "abandoned_cart";
@@ -406,6 +433,30 @@ export interface operations {
                 };
             };
             401: components["responses"]["Unauthorized"];
+        };
+    };
+    getCall: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Call detail */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallDetail"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["BadRequest"];
         };
     };
     getSummary: {

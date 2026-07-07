@@ -2,9 +2,13 @@ import { api, unwrap } from './client';
 import type { components } from './schema';
 
 export type Call = components['schemas']['Call'];
+export type CallDetail = components['schemas']['CallDetail'];
 export type Summary = components['schemas']['Summary'];
 
 export const listCalls = async (): Promise<Call[]> => (await unwrap(api.GET('/v1/calls'))).calls;
+
+export const getCall = (id: string) =>
+	unwrap(api.GET('/v1/calls/{id}', { params: { path: { id } } }));
 
 export const getSummary = () => unwrap(api.GET('/v1/analytics/summary'));
 
