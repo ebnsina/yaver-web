@@ -6,11 +6,15 @@
 	let { active }: { active: 'dashboard' | 'calls' | 'settings' } = $props();
 
 	let phone = $state('');
+	let orgName = $state('');
 	let menuOpen = $state(false);
 
 	$effect(() => {
 		me()
-			.then((u) => (phone = u.phone))
+			.then((u) => {
+				phone = u.phone;
+				orgName = u.org.name;
+			})
 			.catch((e) => {
 				// Only a real 401 signs you out; ignore transient errors.
 				if (isUnauthorized(e)) goto('/login');
@@ -44,7 +48,7 @@
 			</span>
 			<span class="text-gray-300">/</span>
 			<span class="flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-gray-900 hover:bg-gray-100">
-				My Store
+				{orgName || '…'}
 				<svg class="h-3 w-3 text-gray-400" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 			</span>
 			<span class="text-gray-300">/</span>

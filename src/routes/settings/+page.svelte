@@ -2,9 +2,15 @@
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
 	import { isUnauthorized } from '$lib/api/client';
-	import { createApiKey, getWebhook, setWebhook } from '$lib/api/settings';
+	import { me } from '$lib/api/auth';
+	import { createApiKey, getWebhook, setWebhook, renameOrg } from '$lib/api/settings';
 
 	let loading = $state(true);
+
+	let orgName = $state('');
+	let orgBusy = $state(false);
+	let orgSaved = $state(false);
+
 	let webhookUrl = $state('');
 	let webhookConfigured = $state(false);
 
@@ -16,8 +22,9 @@
 	let hookError = $state<string | null>(null);
 
 	$effect(() => {
-		getWebhook()
-			.then((c) => {
+		Promise.all([me(), getWebhook()])
+			.then(([u, c]) => {
+				orgName = u.org.name;
 				webhookConfigured = c.configured;
 				webhookUrl = c.url ?? '';
 			})
@@ -26,6 +33,18 @@
 			})
 			.finally(() => (loading = false));
 	});
+
+	async function saveOrg(e: SubmitEvent) {
+		e.preventDefault();
+		orgBusy = true;
+		orgSaved = false;
+		try {
+			await renameOrg(orgName);
+			orgSaved = true;
+		} finally {
+			orgBusy = false;
+		}
+	}
 
 	async function generateKey() {
 		keyBusy = true;
@@ -67,6 +86,26 @@
 		{#if loading}
 			<p class="text-sm text-gray-500">Loading…</p>
 		{:else}
+			<!-- Organization -->
+			<section class="rounded-xl border border-gray-200 bg-white p-6">
+				<h2 class="text-base font-semibold text-gray-900">Organization</h2>
+				<p class="mt-1 text-sm text-gray-500">The store name shown in the dashboard.</p>
+				<form class="mt-4 flex gap-2" onsubmit={saveOrg}>
+					<input
+						bind:value={orgName}
+						required
+						class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+					/>
+					<button
+						disabled={orgBusy}
+						class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+					>
+						{orgBusy ? 'Saving…' : 'Save'}
+					</button>
+					{#if orgSaved}<span class="self-center text-sm text-green-700">Saved</span>{/if}
+				</form>
+			</section>
+
 			<!-- API key -->
 			<section class="rounded-xl border border-gray-200 bg-white p-6">
 				<h2 class="text-base font-semibold text-gray-900">API key</h2>

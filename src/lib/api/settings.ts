@@ -3,6 +3,9 @@ import type { components } from './schema';
 
 export type WebhookConfig = components['schemas']['WebhookConfig'];
 
+export const renameOrg = (name: string) =>
+	unwrap(api.PUT('/v1/settings/org', { body: { name } }));
+
 export const createApiKey = () => unwrap(api.POST('/v1/settings/api-keys'));
 
 export const getWebhook = () => unwrap(api.GET('/v1/settings/webhook'));

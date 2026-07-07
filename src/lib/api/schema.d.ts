@@ -140,6 +140,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/settings/org": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Rename the org (store) shown in the dashboard */
+        put: operations["renameOrg"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/settings/api-keys": {
         parameters: {
             query?: never;
@@ -224,6 +241,10 @@ export interface components {
             phone: string;
             email: string;
             name: string;
+            org: {
+                id: string;
+                name: string;
+            };
         };
         Summary: {
             total: number;
@@ -500,6 +521,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TestCallResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    renameOrg: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Renamed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        name: string;
+                    };
                 };
             };
             400: components["responses"]["BadRequest"];
