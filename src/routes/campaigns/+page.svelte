@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { Plus, Play } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { listCampaigns, createCampaign, startCampaign, type Campaign } from '$lib/api/campaigns';
 
@@ -63,6 +64,7 @@
 		<form class="card mt-6 flex gap-2 p-4" onsubmit={create}>
 			<input bind:value={name} placeholder="Campaign name — e.g. Eid follow-up" class="input flex-1" />
 			<button disabled={creating || !name.trim()} class="btn-primary">
+				<Plus size={16} />
 				{creating ? 'Creating…' : 'New campaign'}
 			</button>
 		</form>
@@ -93,7 +95,8 @@
 								<td class="px-5 py-3.5 text-right">
 									{#if c.status === 'draft'}
 										<button disabled={starting[c.id]} onclick={() => start(c)} class="btn-secondary px-3 py-1.5">
-											{starting[c.id] ? 'Starting…' : 'Start'}
+											<Play size={14} />
+										{starting[c.id] ? 'Starting…' : 'Start'}
 										</button>
 									{/if}
 								</td>

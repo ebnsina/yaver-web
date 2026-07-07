@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { ChevronRight } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { listCalls, type Call } from '$lib/api/calls';
 
@@ -79,9 +80,9 @@
 									</span>
 								</td>
 								<td class="px-5 py-3.5 text-gray-500">{when(c.created_at)}</td>
-								<td class="px-5 py-3.5 text-right text-gray-300 transition-colors group-hover:text-gray-500"
-									>›</td
-								>
+								<td class="px-5 py-3.5 text-right text-gray-300 transition-colors group-hover:text-gray-500">
+									<ChevronRight size={16} class="ml-auto" />
+								</td>
 							</tr>
 						{/each}
 					</tbody>

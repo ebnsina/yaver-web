@@ -3,6 +3,7 @@
 	import { tick } from 'svelte';
 	import Header from '$lib/components/Header.svelte';
 	import { isUnauthorized } from '$lib/api/client';
+	import { Plus, History, ChevronDown, ArrowUp } from '@lucide/svelte';
 	import {
 		listConversations,
 		getMessages,
@@ -112,8 +113,9 @@
 			<div class="flex items-center gap-2">
 				<div class="relative">
 					<button onclick={() => (historyOpen = !historyOpen)} class="btn-secondary px-3 py-1.5">
+						<History size={15} />
 						History
-						<svg class="h-3 w-3 text-gray-400" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+						<ChevronDown size={14} class="text-gray-400" />
 					</button>
 					{#if historyOpen}
 						<button class="fixed inset-0 z-10 cursor-default" aria-label="Close" onclick={() => (historyOpen = false)}></button>
@@ -134,7 +136,7 @@
 						</div>
 					{/if}
 				</div>
-				<button onclick={newChat} class="btn-primary px-3 py-1.5">New chat</button>
+				<button onclick={newChat} class="btn-primary px-3 py-1.5"><Plus size={15} />New chat</button>
 			</div>
 		</div>
 
@@ -193,7 +195,7 @@
 					aria-label="Send"
 					class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white transition-colors hover:bg-gray-800 disabled:opacity-40"
 				>
-					<svg class="h-4 w-4" viewBox="0 0 16 16" fill="none"><path d="M8 13V3m0 0L4 7m4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+					<ArrowUp size={18} />
 				</button>
 			</div>
 			<p class="mt-2 text-center text-xs text-gray-400">Enter to send · Shift+Enter for a new line</p>

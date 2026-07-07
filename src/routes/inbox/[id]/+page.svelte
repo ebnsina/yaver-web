@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { getMessages, listConversations, type ChatMessage, type Conversation } from '$lib/api/chat';
 
@@ -34,7 +35,7 @@
 	<Header active="inbox" />
 
 	<main class="mx-auto max-w-6xl px-6 py-10">
-		<a href="/inbox" class="text-sm text-gray-500 hover:text-gray-900">← Inbox</a>
+		<a href="/inbox" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"><ArrowLeft size={15} />Inbox</a>
 
 		{#if loading}
 			<p class="mt-4 text-sm text-gray-500">Loading…</p>

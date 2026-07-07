@@ -4,6 +4,7 @@
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
 	import { getChatSettings, saveChatSettings, type ChatSettings } from '$lib/api/chat';
+	import { Building2, KeyRound, MessageSquare, MessageCircle, Webhook } from '@lucide/svelte';
 	import {
 		listChannels,
 		connectChannel,
@@ -190,7 +191,7 @@
 		{:else}
 			<!-- Organization -->
 			<section class="card p-6">
-				<h2 class="text-sm font-semibold text-gray-900">Organization</h2>
+				<h2 class="flex items-center gap-2 text-sm font-semibold text-gray-900"><Building2 size={16} class="text-gray-400" />Organization</h2>
 				<p class="mt-1 text-sm text-gray-500">The store name shown in the dashboard.</p>
 				<form class="mt-4 flex gap-2" onsubmit={saveOrg}>
 					<input
@@ -210,7 +211,7 @@
 
 			<!-- API key -->
 			<section class="card p-6">
-				<h2 class="text-sm font-semibold text-gray-900">API key</h2>
+				<h2 class="flex items-center gap-2 text-sm font-semibold text-gray-900"><KeyRound size={16} class="text-gray-400" />API key</h2>
 				<p class="mt-1 text-sm text-gray-500">
 					Use this key to send store events to <code class="font-mono">/v1/events</code>.
 				</p>
@@ -241,7 +242,7 @@
 
 			<!-- Chat widget -->
 			<section class="card p-6">
-				<h2 class="text-sm font-semibold text-gray-900">Chat widget</h2>
+				<h2 class="flex items-center gap-2 text-sm font-semibold text-gray-900"><MessageSquare size={16} class="text-gray-400" />Chat widget</h2>
 				<p class="mt-1 text-sm text-gray-500">
 					Drop the AI chat onto any website with one line. Uses a publishable key (safe to expose).
 				</p>
@@ -297,7 +298,7 @@
 
 			<!-- Messaging channels -->
 			<section class="card p-6">
-				<h2 class="text-sm font-semibold text-gray-900">WhatsApp & Messenger</h2>
+				<h2 class="flex items-center gap-2 text-sm font-semibold text-gray-900"><MessageCircle size={16} class="text-gray-400" />WhatsApp & Messenger</h2>
 				<p class="mt-1 text-sm text-gray-500">
 					Connect WhatsApp or Messenger so your assistant can reply to customers automatically.
 				</p>
@@ -337,7 +338,7 @@
 
 			<!-- Webhook -->
 			<section class="card p-6">
-				<h2 class="text-sm font-semibold text-gray-900">Webhook</h2>
+				<h2 class="flex items-center gap-2 text-sm font-semibold text-gray-900"><Webhook size={16} class="text-gray-400" />Webhook</h2>
 				<p class="mt-1 text-sm text-gray-500">
 					We POST signed call/chat outcomes here.
 					{#if webhookConfigured}<span class="text-green-700">Currently configured.</span>{/if}

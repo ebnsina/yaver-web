@@ -29,6 +29,7 @@
 	"dependencies": {
 		"@fontsource-variable/geist-mono": "^5.2.8",
 		"@fontsource-variable/mona-sans": "^5.2.8",
+		"@lucide/svelte": "^1.23.0",
 		"openapi-fetch": "^0.17.0"
 	}
 }

@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { getCall, type CallDetail } from '$lib/api/calls';
 
 	let call = $state<CallDetail | null>(null);
@@ -45,7 +46,7 @@
 	<Header active="calls" />
 
 	<main class="mx-auto max-w-6xl px-6 py-10">
-		<a href="/calls" class="text-sm text-gray-500 hover:text-gray-900">← Calls</a>
+		<a href="/calls" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"><ArrowLeft size={15} />Calls</a>
 
 		{#if loading}
 			<p class="mt-4 text-sm text-gray-500">Loading…</p>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { Phone, Check } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
 	import { getSummary, sendTestCall, type Summary } from '$lib/api/calls';
@@ -93,7 +94,7 @@
 										? 'bg-green-500 text-white'
 										: 'border border-gray-300 text-transparent'}"
 								>
-									✓
+									<Check size={12} />
 								</span>
 								{#if s.done}
 									<span class="text-gray-400 line-through">{s.label}</span>
@@ -137,7 +138,7 @@
 						<option value="2">2 — Cancel</option>
 						<option value="3">3 — Reschedule</option>
 					</select>
-					<button disabled={sending} class="btn-primary">{sending ? 'Calling…' : 'Send'}</button>
+					<button disabled={sending} class="btn-primary"><Phone size={16} />{sending ? 'Calling…' : 'Send'}</button>
 					{#if lastResult}
 						<span class="badge bg-green-50 text-green-700">→ {lastResult}</span>
 					{/if}

@@ -2,6 +2,19 @@
 	import { goto } from '$app/navigation';
 	import { me, logout } from '$lib/api/auth';
 	import { isUnauthorized } from '$lib/api/client';
+	import {
+		LayoutDashboard,
+		Phone,
+		MessageCircle,
+		Inbox,
+		Users,
+		Megaphone,
+		Workflow,
+		Settings,
+		Search,
+		ChevronDown,
+		CircleUser
+	} from '@lucide/svelte';
 
 	let {
 		active
@@ -39,14 +52,14 @@
 	}
 
 	const tabs = [
-		{ key: 'dashboard', label: 'Dashboard', href: '/' },
-		{ key: 'calls', label: 'Calls', href: '/calls' },
-		{ key: 'chat', label: 'Chat', href: '/chat' },
-		{ key: 'inbox', label: 'Inbox', href: '/inbox' },
-		{ key: 'customers', label: 'Customers', href: '/customers' },
-		{ key: 'campaigns', label: 'Campaigns', href: '/campaigns' },
-		{ key: 'flows', label: 'Flows', href: '/flows' },
-		{ key: 'settings', label: 'Settings', href: '/settings' }
+		{ key: 'dashboard', label: 'Dashboard', href: '/', icon: LayoutDashboard },
+		{ key: 'calls', label: 'Calls', href: '/calls', icon: Phone },
+		{ key: 'chat', label: 'Chat', href: '/chat', icon: MessageCircle },
+		{ key: 'inbox', label: 'Inbox', href: '/inbox', icon: Inbox },
+		{ key: 'customers', label: 'Customers', href: '/customers', icon: Users },
+		{ key: 'campaigns', label: 'Campaigns', href: '/campaigns', icon: Megaphone },
+		{ key: 'flows', label: 'Flows', href: '/flows', icon: Workflow },
+		{ key: 'settings', label: 'Settings', href: '/settings', icon: Settings }
 	] as const;
 </script>
 
@@ -61,24 +74,24 @@
 			</div>
 			<span class="ml-1 flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-gray-900 hover:bg-gray-100">
 				Yaver
-				<svg class="h-3 w-3 text-gray-400" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				<ChevronDown class="text-gray-400" size={14} />
 			</span>
 			<span class="text-gray-300">/</span>
 			<span class="flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-gray-900 hover:bg-gray-100">
 				{orgName || '…'}
-				<svg class="h-3 w-3 text-gray-400" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				<ChevronDown class="text-gray-400" size={14} />
 			</span>
 			<span class="text-gray-300">/</span>
 			<span class="flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-gray-900 hover:bg-gray-100">
 				<span class="h-2 w-2 rounded-full bg-green-500"></span>
 				Live
-				<svg class="h-3 w-3 text-gray-400" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				<ChevronDown class="text-gray-400" size={14} />
 			</span>
 		</div>
 
 		<div class="flex items-center gap-4 text-sm text-gray-500">
 			<div class="hidden items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-gray-400 md:flex">
-				<svg class="h-4 w-4" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="m11 11 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+				<Search size={16} />
 				<span>Search</span>
 				<kbd class="ml-8 rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs">⌘K</kbd>
 			</div>
@@ -91,7 +104,7 @@
 					aria-label="Account menu"
 					aria-expanded={menuOpen}
 				>
-					<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 1c-2.5 0-6 1.2-6 3.5V14h12v-1.5C14 10.2 10.5 9 8 9Z"/></svg>
+					<CircleUser size={18} />
 				</button>
 				{#if menuOpen}
 					<!-- click-away backdrop -->
@@ -122,12 +135,14 @@
 	<div class="mx-auto max-w-6xl px-6">
 		<nav class="-mb-px flex gap-6 text-sm">
 			{#each tabs as t (t.key)}
+				{@const Icon = t.icon}
 				<a
 					href={t.href}
-					class="border-b-2 pb-3 pt-1 {active === t.key
+					class="flex items-center gap-1.5 border-b-2 pb-3 pt-1 {active === t.key
 						? 'border-gray-900 font-medium text-gray-900'
 						: 'border-transparent text-gray-500 hover:text-gray-900'}"
 				>
+					<Icon size={15} />
 					{t.label}
 				</a>
 			{/each}

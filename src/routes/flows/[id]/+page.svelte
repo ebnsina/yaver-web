@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { getFlow, updateFlow, type FlowDetail } from '$lib/api/flows';
 
@@ -62,7 +63,7 @@
 	<Header active="flows" />
 
 	<main class="mx-auto max-w-6xl px-6 py-10">
-		<a href="/flows" class="text-sm text-gray-500 hover:text-gray-900">← Flows</a>
+		<a href="/flows" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"><ArrowLeft size={15} />Flows</a>
 
 		{#if loading}
 			<p class="mt-4 text-sm text-gray-500">Loading…</p>

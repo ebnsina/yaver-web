@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import { ChevronRight } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { listConversations, type Conversation } from '$lib/api/chat';
 
@@ -55,7 +56,7 @@
 							<p class="mt-0.5 truncate text-sm text-gray-500">{c.last_message}</p>
 						</div>
 						<span class="shrink-0 font-mono text-xs text-gray-400">{c.message_count} msgs</span>
-						<span class="shrink-0 text-gray-300">›</span>
+						<ChevronRight size={16} class="shrink-0 text-gray-300" />
 					</a>
 				{/each}
 			</div>
