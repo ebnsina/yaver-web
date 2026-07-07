@@ -19,6 +19,7 @@
 		"@tailwindcss/vite": "^4.3.2",
 		"@types/node": "^26.1.0",
 		"openapi-typescript": "^7.13.0",
+		"playwright": "^1.61.1",
 		"svelte": "^5.56.1",
 		"svelte-check": "^4.6.0",
 		"tailwindcss": "^4.3.2",
@@ -26,6 +27,8 @@
 		"vite": "^8.0.16"
 	},
 	"dependencies": {
+		"@fontsource-variable/geist-mono": "^5.2.8",
+		"@fontsource-variable/mona-sans": "^5.2.8",
 		"openapi-fetch": "^0.17.0"
 	}
 }

@@ -1,1 +1,10 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/mona-sans';
+@import '@fontsource-variable/geist-mono';
+
+/* Tailwind v4: set the default sans + mono families. `font-sans` (and the base
+   body via preflight) use Mona Sans; `font-mono` uses Geist Mono. */
+@theme {
+	--font-sans: 'Mona Sans Variable', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', monospace;
+}

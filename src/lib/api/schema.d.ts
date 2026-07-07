@@ -89,6 +89,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/analytics/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dashboard metrics rollup */
+        get: operations["getSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/dev/test-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Simulate a call with a keypress (no telephony) — generates an outcome */
+        post: operations["testCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/settings/api-keys": {
         parameters: {
             query?: never;
@@ -173,6 +207,24 @@ export interface components {
             phone: string;
             email: string;
             name: string;
+        };
+        Summary: {
+            total: number;
+            confirmed: number;
+            cancelled: number;
+            today: number;
+            /** @description percent 0-100 */
+            confirmation_rate: number;
+        };
+        TestCallRequest: {
+            phone: string;
+            /** @description simulated keypress: 1|2|3 */
+            digit?: string;
+        };
+        TestCallResult: {
+            call_id: string;
+            status: string;
+            result: string;
         };
         ApiKeyResult: {
             api_key: string;
@@ -353,6 +405,53 @@ export interface operations {
                     "application/json": components["schemas"]["CallList"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Summary */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Summary"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    testCall: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestCallRequest"];
+            };
+        };
+        responses: {
+            /** @description Simulated call outcome */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestCallResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
             401: components["responses"]["Unauthorized"];
         };
     };
