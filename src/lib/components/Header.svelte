@@ -89,7 +89,7 @@
 						onclick={() => (menuOpen = false)}
 					></button>
 					<div
-						class="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+						class="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white py-1"
 					>
 						<div class="px-3 py-2 text-xs text-gray-400">Signed in as</div>
 						<div class="truncate px-3 pb-2 font-mono text-sm text-gray-900">{phone || '—'}</div>

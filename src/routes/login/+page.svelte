@@ -42,7 +42,7 @@
 <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4">
 	<div class="w-full max-w-sm">
 		<div class="mb-6 flex flex-col items-center text-center">
-			<div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-900 text-lg font-bold text-white shadow-sm">
+			<div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-900 text-lg font-bold text-white">
 				Y
 			</div>
 			<h1 class="mt-4 text-xl font-semibold tracking-tight text-gray-900">Sign in to Yaver</h1>

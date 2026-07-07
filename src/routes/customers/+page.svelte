@@ -75,7 +75,7 @@
 											: 'bg-gray-200'}"
 									>
 										<span
-											class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform {c.dnd
+											class="inline-block h-4 w-4 transform rounded-full border border-gray-300 bg-white transition-transform {c.dnd
 												? 'translate-x-4'
 												: 'translate-x-0.5'}"
 										></span>
