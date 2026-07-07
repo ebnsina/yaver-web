@@ -106,6 +106,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/chat/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send a message and get the assistant's reply */
+        post: operations["sendChatMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/chat/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The org's chat conversations */
+        get: operations["listConversations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/chat/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A conversation's messages */
+        get: operations["getConversation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/campaigns": {
         parameters: {
             query?: never;
@@ -396,6 +447,27 @@ export interface components {
         WebhookSecret: {
             secret: string;
         };
+        Conversation: {
+            id: string;
+            status: string;
+            last_message: string;
+            message_count: number;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        ConversationList: {
+            conversations: components["schemas"]["Conversation"][];
+        };
+        ChatMessage: {
+            /** @enum {string} */
+            role: "user" | "assistant" | "system";
+            content: string;
+            /** Format: date-time */
+            created_at: string;
+        };
+        MessageList: {
+            messages: components["schemas"]["ChatMessage"][];
+        };
         Campaign: {
             id: string;
             name: string;
@@ -637,6 +709,84 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CallDetail"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["BadRequest"];
+        };
+    };
+    sendChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Omit to start a new conversation */
+                    conversation_id?: string;
+                    text: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Reply */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        conversation_id: string;
+                        reply: string;
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listConversations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Conversations */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getConversation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Messages */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageList"];
                 };
             };
             401: components["responses"]["Unauthorized"];

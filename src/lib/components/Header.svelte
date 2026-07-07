@@ -5,7 +5,9 @@
 
 	let {
 		active
-	}: { active: 'dashboard' | 'calls' | 'customers' | 'campaigns' | 'flows' | 'settings' } = $props();
+	}: {
+		active: 'dashboard' | 'calls' | 'chat' | 'customers' | 'campaigns' | 'flows' | 'settings';
+	} = $props();
 
 	let phone = $state('');
 	let orgName = $state('');
@@ -31,6 +33,7 @@
 	const tabs = [
 		{ key: 'dashboard', label: 'Dashboard', href: '/' },
 		{ key: 'calls', label: 'Calls', href: '/calls' },
+		{ key: 'chat', label: 'Chat', href: '/chat' },
 		{ key: 'customers', label: 'Customers', href: '/customers' },
 		{ key: 'campaigns', label: 'Campaigns', href: '/campaigns' },
 		{ key: 'flows', label: 'Flows', href: '/flows' },
