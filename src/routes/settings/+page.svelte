@@ -3,6 +3,7 @@
 	import Header from '$lib/components/Header.svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
+	import { getChatSettings, saveChatSettings, type ChatSettings } from '$lib/api/chat';
 	import {
 		createApiKey,
 		createPublishableKey,
@@ -24,6 +25,11 @@
 	let pubKey = $state<string | null>(null); // full key, shown once after minting
 	let pubBusy = $state(false);
 	let previewLoaded = $state(false);
+
+	// Widget customization
+	let cs = $state<ChatSettings>({ instructions: '', widget_title: '', welcome: '', accent: '#111827' });
+	let csBusy = $state(false);
+	let csSaved = $state(false);
 	const hasPublishable = $derived(keys.some((k) => k.kind === 'publishable'));
 	const widgetOrigin =
 		typeof window !== 'undefined' ? window.location.origin : 'https://your-api.example';
@@ -42,12 +48,13 @@
 	let hookError = $state<string | null>(null);
 
 	$effect(() => {
-		Promise.all([me(), getWebhook(), listApiKeys()])
-			.then(([u, c, k]) => {
+		Promise.all([me(), getWebhook(), listApiKeys(), getChatSettings()])
+			.then(([u, c, k, s]) => {
 				orgName = u.org.name;
 				webhookConfigured = c.configured;
 				webhookUrl = c.url ?? '';
 				keys = k;
+				cs = s;
 			})
 			.catch((e) => {
 				if (isUnauthorized(e)) goto('/login');
@@ -84,6 +91,18 @@
 			keys = await listApiKeys();
 		} finally {
 			pubBusy = false;
+		}
+	}
+
+	async function saveWidget(e: SubmitEvent) {
+		e.preventDefault();
+		csBusy = true;
+		csSaved = false;
+		try {
+			await saveChatSettings(cs);
+			csSaved = true;
+		} finally {
+			csBusy = false;
 		}
 	}
 
@@ -185,7 +204,39 @@
 				<p class="mt-1 text-sm text-gray-500">
 					Drop the AI chat onto any website with one line. Uses a publishable key (safe to expose).
 				</p>
-				<button onclick={generatePublishable} disabled={pubBusy} class="mt-4 btn-primary">
+
+				<!-- Appearance -->
+				<form class="mt-4 space-y-4 border-b border-gray-100 pb-6" onsubmit={saveWidget}>
+					<div class="grid gap-4 sm:grid-cols-2">
+						<label class="block">
+							<span class="label">Widget title</span>
+							<input bind:value={cs.widget_title} class="input mt-1 w-full" placeholder="Chat with us" />
+						</label>
+						<label class="block">
+							<span class="label">Accent color</span>
+							<div class="mt-1 flex items-center gap-2">
+								<input type="color" bind:value={cs.accent} class="h-9 w-12 rounded-lg border border-gray-300" />
+								<input bind:value={cs.accent} class="input w-full font-mono" />
+							</div>
+						</label>
+					</div>
+					<label class="block">
+						<span class="label">Welcome message</span>
+						<input bind:value={cs.welcome} class="input mt-1 w-full" placeholder="Hi! 👋 How can I help you today?" />
+					</label>
+					<label class="block">
+						<span class="label">Assistant instructions</span>
+						<textarea bind:value={cs.instructions} rows="2" class="input mt-1 w-full resize-none" placeholder="e.g. Reply only in Bangla. Be warm and concise."></textarea>
+						<span class="mt-1 block text-xs text-gray-400">Applied once a live LLM is connected.</span>
+					</label>
+					<div class="flex items-center gap-3">
+						<button disabled={csBusy} class="btn-primary">{csBusy ? 'Saving…' : 'Save appearance'}</button>
+						{#if csSaved}<span class="text-sm text-green-700">Saved</span>{/if}
+					</div>
+				</form>
+
+				<p class="mt-6 text-xs font-medium uppercase tracking-wider text-gray-400">Install</p>
+				<button onclick={generatePublishable} disabled={pubBusy} class="mt-3 btn-primary">
 					{pubBusy ? 'Generating…' : hasPublishable ? 'Regenerate publishable key' : 'Generate publishable key'}
 				</button>
 
