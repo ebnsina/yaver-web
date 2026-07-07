@@ -139,9 +139,9 @@
 		</div>
 
 		<!-- messages -->
-		<div bind:this={scroller} class="flex-1 space-y-5 overflow-y-auto py-4">
+		<div bind:this={scroller} class="flex flex-1 flex-col gap-6 overflow-y-auto py-4">
 			{#if messages.length === 0 && !thinking}
-				<div class="flex h-full flex-col items-center justify-center text-center">
+				<div class="flex flex-1 flex-col items-center justify-center text-center">
 					<div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-900 text-lg font-bold text-white">Y</div>
 					<p class="mt-4 text-base font-medium text-gray-900">How can I help?</p>
 					<p class="mt-1 text-sm text-gray-400">Try "where is my order?" or "I want a refund".</p>
@@ -150,15 +150,15 @@
 
 			{#each messages as m, i (i)}
 				{#if m.role === 'user'}
-					<div class="flex justify-end">
-						<div class="max-w-[80%] whitespace-pre-wrap rounded-2xl bg-gray-900 px-4 py-2.5 text-sm text-white">
-							{m.content}
-						</div>
+					<!-- user: right-aligned bubble -->
+					<div class="max-w-[80%] self-end whitespace-pre-wrap rounded-2xl rounded-br-md bg-gray-900 px-4 py-2.5 text-sm text-white">
+						{m.content}
 					</div>
 				{:else}
-					<div class="flex gap-3">
+					<!-- assistant: avatar + prose, left -->
+					<div class="flex max-w-[85%] gap-3 self-start">
 						<div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-900 text-xs font-bold text-white">Y</div>
-						<div class="max-w-[80%] whitespace-pre-wrap pt-1 text-sm leading-relaxed text-gray-900">
+						<div class="whitespace-pre-wrap pt-1 text-sm leading-relaxed text-gray-900">
 							{m.content}{#if streaming && i === messages.length - 1}<span class="caret"></span>{/if}
 						</div>
 					</div>
@@ -166,7 +166,7 @@
 			{/each}
 
 			{#if thinking}
-				<div class="flex gap-3">
+				<div class="flex gap-3 self-start">
 					<div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-900 text-xs font-bold text-white">Y</div>
 					<div class="flex items-center gap-1 pt-2.5">
 						<span class="dot"></span>
