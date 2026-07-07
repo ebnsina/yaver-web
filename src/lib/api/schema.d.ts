@@ -536,6 +536,8 @@ export interface components {
         };
         Conversation: {
             id: string;
+            channel: string;
+            customer: string;
             status: string;
             last_message: string;
             message_count: number;

@@ -6,7 +6,15 @@
 	let {
 		active
 	}: {
-		active: 'dashboard' | 'calls' | 'chat' | 'customers' | 'campaigns' | 'flows' | 'settings';
+		active:
+			| 'dashboard'
+			| 'calls'
+			| 'chat'
+			| 'inbox'
+			| 'customers'
+			| 'campaigns'
+			| 'flows'
+			| 'settings';
 	} = $props();
 
 	let phone = $state('');
@@ -34,6 +42,7 @@
 		{ key: 'dashboard', label: 'Dashboard', href: '/' },
 		{ key: 'calls', label: 'Calls', href: '/calls' },
 		{ key: 'chat', label: 'Chat', href: '/chat' },
+		{ key: 'inbox', label: 'Inbox', href: '/inbox' },
 		{ key: 'customers', label: 'Customers', href: '/customers' },
 		{ key: 'campaigns', label: 'Campaigns', href: '/campaigns' },
 		{ key: 'flows', label: 'Flows', href: '/flows' },
