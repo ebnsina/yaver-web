@@ -128,7 +128,7 @@
 			<section class="card mt-8 p-6">
 				<h2 class="text-sm font-semibold text-gray-900">Send a test call</h2>
 				<p class="mt-1 text-sm text-gray-500">
-					Simulate a call outcome (no telephony) to see the flow end-to-end.
+					Send yourself a sample call to see how a customer confirmation works.
 				</p>
 				<form class="mt-4 flex flex-wrap items-center gap-2" onsubmit={send}>
 					<input bind:value={testPhone} type="tel" required placeholder="01712345678" class="input w-48" />

@@ -5,6 +5,12 @@
 	import { me } from '$lib/api/auth';
 	import { getChatSettings, saveChatSettings, type ChatSettings } from '$lib/api/chat';
 	import {
+		listChannels,
+		connectChannel,
+		disconnectChannel,
+		type Channel
+	} from '$lib/api/channels';
+	import {
 		createApiKey,
 		createPublishableKey,
 		getWebhook,
@@ -30,6 +36,18 @@
 	let cs = $state<ChatSettings>({ instructions: '', widget_title: '', welcome: '', accent: '#111827' });
 	let csBusy = $state(false);
 	let csSaved = $state(false);
+
+	// Messaging channels
+	let channels = $state<Channel[]>([]);
+	let chType = $state<'whatsapp' | 'messenger'>('whatsapp');
+	let chExternalId = $state('');
+	let chToken = $state('');
+	let chVerify = $state('');
+	let chBusy = $state(false);
+	let chError = $state<string | null>(null);
+	const webhookUrl2 =
+		(typeof window !== 'undefined' ? window.location.origin : 'https://your-api.example') +
+		'/webhooks/meta';
 	const hasPublishable = $derived(keys.some((k) => k.kind === 'publishable'));
 	const widgetOrigin =
 		typeof window !== 'undefined' ? window.location.origin : 'https://your-api.example';
@@ -48,13 +66,14 @@
 	let hookError = $state<string | null>(null);
 
 	$effect(() => {
-		Promise.all([me(), getWebhook(), listApiKeys(), getChatSettings()])
-			.then(([u, c, k, s]) => {
+		Promise.all([me(), getWebhook(), listApiKeys(), getChatSettings(), listChannels()])
+			.then(([u, c, k, s, ch]) => {
 				orgName = u.org.name;
 				webhookConfigured = c.configured;
 				webhookUrl = c.url ?? '';
 				keys = k;
 				cs = s;
+				channels = ch;
 			})
 			.catch((e) => {
 				if (isUnauthorized(e)) goto('/login');
@@ -92,6 +111,28 @@
 		} finally {
 			pubBusy = false;
 		}
+	}
+
+	async function connect(e: SubmitEvent) {
+		e.preventDefault();
+		chError = null;
+		chBusy = true;
+		try {
+			await connectChannel(chType, chExternalId.trim(), chToken.trim(), chVerify.trim());
+			chExternalId = '';
+			chToken = '';
+			chVerify = '';
+			channels = await listChannels();
+		} catch {
+			chError = 'Could not connect channel';
+		} finally {
+			chBusy = false;
+		}
+	}
+
+	async function disconnect(type: string) {
+		await disconnectChannel(type);
+		channels = await listChannels();
 	}
 
 	async function saveWidget(e: SubmitEvent) {
@@ -227,7 +268,7 @@
 					<label class="block">
 						<span class="label">Assistant instructions</span>
 						<textarea bind:value={cs.instructions} rows="2" class="input mt-1 w-full resize-none" placeholder="e.g. Reply only in Bangla. Be warm and concise."></textarea>
-						<span class="mt-1 block text-xs text-gray-400">Applied once a live LLM is connected.</span>
+						<span class="mt-1 block text-xs text-gray-400">Guides how your assistant answers.</span>
 					</label>
 					<div class="flex items-center gap-3">
 						<button disabled={csBusy} class="btn-primary">{csBusy ? 'Saving…' : 'Save appearance'}</button>
@@ -252,6 +293,46 @@
 						A publishable key already exists. Regenerate to reveal a full key for embedding.
 					</p>
 				{/if}
+			</section>
+
+			<!-- Messaging channels -->
+			<section class="card p-6">
+				<h2 class="text-sm font-semibold text-gray-900">WhatsApp & Messenger</h2>
+				<p class="mt-1 text-sm text-gray-500">
+					Connect WhatsApp or Messenger so your assistant can reply to customers automatically.
+				</p>
+
+				{#if channels.length}
+					<ul class="mt-4 divide-y divide-gray-100 border-y border-gray-100">
+						{#each channels as c (c.type)}
+							<li class="flex items-center justify-between py-3">
+								<span class="flex items-center gap-2">
+									<span class="badge {c.type === 'whatsapp' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}">{c.type}</span>
+									<code class="font-mono text-sm text-gray-600">{c.external_id}</code>
+								</span>
+								<button onclick={() => disconnect(c.type)} class="text-sm text-red-600 hover:text-red-700">Disconnect</button>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+
+				<p class="mt-5 text-xs text-gray-500">
+					In Meta, set the webhook URL to
+					<code class="font-mono text-gray-700">{webhookUrl2}</code> and use the verify token below.
+				</p>
+				<form class="mt-3 grid gap-3 sm:grid-cols-2" onsubmit={connect}>
+					<select bind:value={chType} class="input">
+						<option value="whatsapp">WhatsApp</option>
+						<option value="messenger">Messenger</option>
+					</select>
+					<input bind:value={chExternalId} required placeholder={chType === 'whatsapp' ? 'phone_number_id' : 'page_id'} class="input" />
+					<input bind:value={chToken} required placeholder="Access token" class="input" />
+					<input bind:value={chVerify} required placeholder="Verify token" class="input" />
+					<div class="sm:col-span-2">
+						<button disabled={chBusy} class="btn-primary">{chBusy ? 'Connecting…' : 'Connect channel'}</button>
+						{#if chError}<span class="ml-3 text-sm text-red-600">{chError}</span>{/if}
+					</div>
+				</form>
 			</section>
 
 			<!-- Webhook -->

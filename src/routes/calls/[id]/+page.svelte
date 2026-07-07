@@ -78,8 +78,7 @@
 				</svg>
 				<p class="mt-3 text-sm text-gray-500">No events yet</p>
 				<p class="mt-1 max-w-sm text-xs text-gray-400">
-					The event timeline, recording, and transcript appear here once calls run on a real
-					telephony provider.
+					The call timeline, recording, and transcript will appear here once live calling is on.
 				</p>
 			</div>
 		{/if}

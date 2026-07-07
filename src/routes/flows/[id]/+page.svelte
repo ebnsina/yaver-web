@@ -103,7 +103,7 @@
 					{/each}
 				</ul>
 				<p class="mt-4 text-xs text-gray-400">
-					Visual branch editing (add steps, rename outcomes) comes with the full builder.
+					More editing options are coming soon.
 				</p>
 			</section>
 		{/if}
