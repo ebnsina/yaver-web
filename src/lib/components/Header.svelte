@@ -33,7 +33,7 @@
 	] as const;
 </script>
 
-<header class="border-b border-gray-200 bg-white">
+<header class="sticky top-0 z-30 border-b border-gray-200 bg-white/85 backdrop-blur-md">
 	<!-- top bar: brand + breadcrumb switchers / search + docs + avatar -->
 	<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
 		<div class="flex items-center gap-2">

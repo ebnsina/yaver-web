@@ -30,14 +30,17 @@
 	<Header active="calls" />
 
 	<main class="mx-auto max-w-6xl px-6 py-10">
-		<h1 class="text-2xl font-semibold text-gray-900">Calls</h1>
+		<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Calls</h1>
 
 		{#if loading}
 			<p class="mt-4 text-sm text-gray-500">Loading…</p>
 		{:else if !calls || calls.length === 0}
-			<p class="mt-4 text-sm text-gray-500">No calls yet.</p>
+			<div class="card mt-6 p-10 text-center">
+				<p class="text-sm text-gray-500">No calls yet.</p>
+				<a href="/" class="btn-secondary mt-4">Send a test call</a>
+			</div>
 		{:else}
-			<div class="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
+			<div class="card mt-6 overflow-hidden">
 				<table class="w-full text-left text-sm">
 					<thead class="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
 						<tr>
@@ -57,9 +60,7 @@
 								<td class="px-4 py-3 font-mono text-xs text-gray-500">{c.id.slice(0, 16)}…</td>
 								<td class="px-4 py-3 text-gray-700">{c.direction}</td>
 								<td class="px-4 py-3">
-									<span class="rounded-full px-2 py-0.5 font-mono text-xs font-medium {badge(c.status)}"
-										>{c.status}</span
-									>
+									<span class="badge {badge(c.status)}">{c.status}</span>
 								</td>
 								<td class="px-4 py-3 text-gray-700">{c.result || '—'}</td>
 								<td class="px-4 py-3 text-gray-500">{when(c.created_at)}</td>

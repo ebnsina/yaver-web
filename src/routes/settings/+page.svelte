@@ -3,13 +3,15 @@
 	import Header from '$lib/components/Header.svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
-	import { createApiKey, getWebhook, setWebhook, renameOrg } from '$lib/api/settings';
+	import { createApiKey, getWebhook, setWebhook, renameOrg, listApiKeys } from '$lib/api/settings';
 
 	let loading = $state(true);
 
 	let orgName = $state('');
 	let orgBusy = $state(false);
 	let orgSaved = $state(false);
+
+	let keys = $state<{ prefix: string; created_at: string }[]>([]);
 
 	let webhookUrl = $state('');
 	let webhookConfigured = $state(false);
@@ -22,11 +24,12 @@
 	let hookError = $state<string | null>(null);
 
 	$effect(() => {
-		Promise.all([me(), getWebhook()])
-			.then(([u, c]) => {
+		Promise.all([me(), getWebhook(), listApiKeys()])
+			.then(([u, c, k]) => {
 				orgName = u.org.name;
 				webhookConfigured = c.configured;
 				webhookUrl = c.url ?? '';
+				keys = k;
 			})
 			.catch((e) => {
 				if (isUnauthorized(e)) goto('/login');
@@ -50,6 +53,7 @@
 		keyBusy = true;
 		try {
 			apiKey = (await createApiKey()).api_key;
+			keys = await listApiKeys();
 		} finally {
 			keyBusy = false;
 		}
@@ -81,24 +85,24 @@
 	<Header active="settings" />
 
 	<main class="mx-auto max-w-2xl space-y-6 px-6 py-10">
-		<h1 class="text-2xl font-semibold text-gray-900">Settings</h1>
+		<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Settings</h1>
 
 		{#if loading}
 			<p class="text-sm text-gray-500">Loading…</p>
 		{:else}
 			<!-- Organization -->
-			<section class="rounded-xl border border-gray-200 bg-white p-6">
-				<h2 class="text-base font-semibold text-gray-900">Organization</h2>
+			<section class="card p-6">
+				<h2 class="text-sm font-semibold text-gray-900">Organization</h2>
 				<p class="mt-1 text-sm text-gray-500">The store name shown in the dashboard.</p>
 				<form class="mt-4 flex gap-2" onsubmit={saveOrg}>
 					<input
 						bind:value={orgName}
 						required
-						class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+						class="input flex-1"
 					/>
 					<button
 						disabled={orgBusy}
-						class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+						class="btn-primary"
 					>
 						{orgBusy ? 'Saving…' : 'Save'}
 					</button>
@@ -107,26 +111,36 @@
 			</section>
 
 			<!-- API key -->
-			<section class="rounded-xl border border-gray-200 bg-white p-6">
-				<h2 class="text-base font-semibold text-gray-900">API key</h2>
+			<section class="card p-6">
+				<h2 class="text-sm font-semibold text-gray-900">API key</h2>
 				<p class="mt-1 text-sm text-gray-500">
 					Use this key to send store events to <code class="font-mono">/v1/events</code>.
 				</p>
 				<button
 					onclick={generateKey}
 					disabled={keyBusy}
-					class="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+					class="mt-4 btn-primary"
 				>
 					{keyBusy ? 'Generating…' : 'Generate API key'}
 				</button>
 				{#if apiKey}
 					{@render reveal('API key', apiKey)}
 				{/if}
+				{#if keys.length}
+					<ul class="mt-4 divide-y divide-gray-100 border-t border-gray-100 text-sm">
+						{#each keys as k (k.prefix)}
+							<li class="flex items-center justify-between py-2">
+								<code class="font-mono text-gray-700">{k.prefix}…</code>
+								<span class="text-xs text-gray-400">{new Date(k.created_at).toLocaleDateString()}</span>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</section>
 
 			<!-- Webhook -->
-			<section class="rounded-xl border border-gray-200 bg-white p-6">
-				<h2 class="text-base font-semibold text-gray-900">Webhook</h2>
+			<section class="card p-6">
+				<h2 class="text-sm font-semibold text-gray-900">Webhook</h2>
 				<p class="mt-1 text-sm text-gray-500">
 					We POST signed call/chat outcomes here.
 					{#if webhookConfigured}<span class="text-green-700">Currently configured.</span>{/if}
@@ -137,11 +151,11 @@
 						type="url"
 						required
 						placeholder="https://your-store.example/webhooks/yaver"
-						class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+						class="input flex-1"
 					/>
 					<button
 						disabled={hookBusy}
-						class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+						class="btn-primary"
 					>
 						{hookBusy ? 'Saving…' : 'Save'}
 					</button>

@@ -40,61 +40,62 @@
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-	<div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-		<h1 class="text-xl font-semibold text-gray-900">Sign in to Yaver</h1>
-		<p class="mt-1 text-sm text-gray-500">
-			{step === 'phone' ? 'Enter your phone number' : `Code sent to ${phone}`}
-		</p>
+	<div class="w-full max-w-sm">
+		<div class="mb-6 flex flex-col items-center text-center">
+			<div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-900 text-lg font-bold text-white shadow-sm">
+				Y
+			</div>
+			<h1 class="mt-4 text-xl font-semibold tracking-tight text-gray-900">Sign in to Yaver</h1>
+			<p class="mt-1 text-sm text-gray-500">
+				{step === 'phone' ? 'Enter your phone number to continue' : `We sent a code to ${phone}`}
+			</p>
+		</div>
 
-		{#if step === 'phone'}
-			<form class="mt-6 space-y-4" onsubmit={sendCode}>
-				<input
-					bind:value={phone}
-					type="tel"
-					placeholder="01712345678"
-					autocomplete="tel"
-					required
-					class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
-				/>
-				<button
-					disabled={busy}
-					class="w-full rounded-lg bg-gray-900 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
-				>
-					{busy ? 'Sending…' : 'Send code'}
-				</button>
-			</form>
-		{:else}
-			<form class="mt-6 space-y-4" onsubmit={confirm}>
-				{#if devCode}
-					<p class="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
-						Dev code: <span class="font-mono font-semibold">{devCode}</span>
-					</p>
-				{/if}
-				<input
-					bind:value={code}
-					inputmode="numeric"
-					placeholder="6-digit code"
-					required
-					class="w-full rounded-lg border border-gray-300 px-3 py-2 text-center text-lg tracking-widest outline-none focus:border-gray-900"
-				/>
-				<button
-					disabled={busy}
-					class="w-full rounded-lg bg-gray-900 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
-				>
-					{busy ? 'Verifying…' : 'Verify'}
-				</button>
-				<button
-					type="button"
-					onclick={() => (step = 'phone')}
-					class="w-full text-center text-xs text-gray-500 hover:text-gray-700"
-				>
-					Use a different number
-				</button>
-			</form>
-		{/if}
+		<div class="card p-6">
+			{#if step === 'phone'}
+				<form class="space-y-3" onsubmit={sendCode}>
+					<input
+						bind:value={phone}
+						type="tel"
+						placeholder="01712345678"
+						autocomplete="tel"
+						required
+						class="input w-full"
+					/>
+					<button disabled={busy} class="btn-primary w-full">
+						{busy ? 'Sending…' : 'Send code'}
+					</button>
+				</form>
+			{:else}
+				<form class="space-y-3" onsubmit={confirm}>
+					{#if devCode}
+						<p class="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+							Dev code: <span class="font-mono font-semibold">{devCode}</span>
+						</p>
+					{/if}
+					<input
+						bind:value={code}
+						inputmode="numeric"
+						placeholder="••••••"
+						required
+						class="input w-full text-center text-lg tracking-[0.5em]"
+					/>
+					<button disabled={busy} class="btn-primary w-full">
+						{busy ? 'Verifying…' : 'Verify'}
+					</button>
+					<button
+						type="button"
+						onclick={() => (step = 'phone')}
+						class="w-full text-center text-xs text-gray-500 hover:text-gray-700"
+					>
+						Use a different number
+					</button>
+				</form>
+			{/if}
 
-		{#if error}
-			<p class="mt-4 text-sm text-red-600">{error}</p>
-		{/if}
+			{#if error}
+				<p class="mt-4 text-sm text-red-600">{error}</p>
+			{/if}
+		</div>
 	</div>
 </div>

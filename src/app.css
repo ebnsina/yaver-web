@@ -2,9 +2,46 @@
 @import '@fontsource-variable/mona-sans';
 @import '@fontsource-variable/geist-mono';
 
-/* Tailwind v4: set the default sans + mono families. `font-sans` (and the base
-   body via preflight) use Mona Sans; `font-mono` uses Geist Mono. */
+/* Tailwind v4: default sans + mono families. */
 @theme {
 	--font-sans: 'Mona Sans Variable', ui-sans-serif, system-ui, sans-serif;
 	--font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', monospace;
+}
+
+@layer base {
+	html {
+		-webkit-font-smoothing: antialiased;
+		text-rendering: optimizeLegibility;
+	}
+	body {
+		@apply bg-gray-50 text-gray-900;
+	}
+}
+
+/* Reusable, cohesive components — soft shadows, generous radii, calm focus. */
+@layer components {
+	.card {
+		@apply rounded-2xl border border-gray-200 bg-white shadow-[0_1px_2px_rgb(15_23_42/0.04),0_1px_3px_rgb(15_23_42/0.04)];
+	}
+
+	.btn {
+		@apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/10 disabled:cursor-not-allowed disabled:opacity-50;
+	}
+	.btn-primary {
+		@apply inline-flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 disabled:cursor-not-allowed disabled:opacity-50;
+	}
+	.btn-secondary {
+		@apply inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/10 disabled:opacity-50;
+	}
+
+	.input {
+		@apply rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:ring-2 focus:ring-gray-900/10;
+	}
+
+	.label {
+		@apply text-[11px] font-medium uppercase tracking-wider text-gray-400;
+	}
+	.badge {
+		@apply inline-flex items-center rounded-full px-2 py-0.5 font-mono text-xs font-medium;
+	}
 }

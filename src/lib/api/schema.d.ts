@@ -164,7 +164,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List the org's API keys (metadata only) */
+        get: operations["listApiKeys"];
         put?: never;
         /** Create an API key for the org (returned once) */
         post: operations["createApiKey"];
@@ -266,6 +267,17 @@ export interface components {
         };
         ApiKeyResult: {
             api_key: string;
+        };
+        ApiKeyInfo: {
+            prefix: string;
+            name: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            last_used_at?: string | null;
+        };
+        ApiKeyList: {
+            keys: components["schemas"]["ApiKeyInfo"][];
         };
         WebhookConfig: {
             configured: boolean;
@@ -554,6 +566,27 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listApiKeys: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Keys */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyList"];
+                };
+            };
             401: components["responses"]["Unauthorized"];
         };
     };

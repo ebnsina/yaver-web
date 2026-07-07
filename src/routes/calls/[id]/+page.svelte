@@ -53,13 +53,11 @@
 			<p class="mt-4 text-sm text-gray-500">Call not found.</p>
 		{:else}
 			<div class="mt-3 flex items-center gap-3">
-				<h1 class="font-mono text-xl font-semibold text-gray-900">{call.id}</h1>
-				<span class="rounded-full px-2 py-0.5 font-mono text-xs font-medium {badge(call.status)}"
-					>{call.status}</span
-				>
+				<h1 class="font-mono text-xl font-semibold tracking-tight text-gray-900">{call.id}</h1>
+				<span class="badge {badge(call.status)}">{call.status}</span>
 			</div>
 
-			<div class="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
+			<div class="card mt-6 overflow-hidden">
 				<dl class="divide-y divide-gray-100 text-sm">
 					{#each rows as r (r.label)}
 						<div class="flex px-5 py-3">
