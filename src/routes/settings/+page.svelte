@@ -4,7 +4,8 @@
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
 	import { getChatSettings, saveChatSettings, type ChatSettings } from '$lib/api/chat';
-	import { Building2, KeyRound, MessageSquare, MessageCircle, Webhook } from '@lucide/svelte';
+	import { Building2, KeyRound, MessageSquare, MessageCircle, Webhook, Wallet } from '@lucide/svelte';
+	import { getBilling, topUp, type Billing } from '$lib/api/billing';
 	import {
 		listChannels,
 		connectChannel,
@@ -21,6 +22,10 @@
 	} from '$lib/api/settings';
 
 	let loading = $state(true);
+
+	// Billing
+	let billing = $state<Billing>({ balance: 0, ledger: [] });
+	let topBusy = $state(false);
 
 	let orgName = $state('');
 	let orgBusy = $state(false);
@@ -67,20 +72,34 @@
 	let hookError = $state<string | null>(null);
 
 	$effect(() => {
-		Promise.all([me(), getWebhook(), listApiKeys(), getChatSettings(), listChannels()])
-			.then(([u, c, k, s, ch]) => {
+		Promise.all([me(), getWebhook(), listApiKeys(), getChatSettings(), listChannels(), getBilling()])
+			.then(([u, c, k, s, ch, b]) => {
 				orgName = u.org.name;
 				webhookConfigured = c.configured;
 				webhookUrl = c.url ?? '';
 				keys = k;
 				cs = s;
 				channels = ch;
+				billing = b;
 			})
 			.catch((e) => {
 				if (isUnauthorized(e)) goto('/login');
 			})
 			.finally(() => (loading = false));
 	});
+
+	async function addCredits(amount: number) {
+		topBusy = true;
+		try {
+			await topUp(amount);
+			billing = await getBilling();
+		} finally {
+			topBusy = false;
+		}
+	}
+
+	const reasonLabel = (r: string) =>
+		r === 'call' ? 'Call' : r === 'topup' ? 'Top-up' : r === 'signup_grant' ? 'Signup grant' : r;
 
 	async function saveOrg(e: SubmitEvent) {
 		e.preventDefault();
@@ -207,6 +226,37 @@
 					</button>
 					{#if orgSaved}<span class="self-center text-sm text-green-700">Saved</span>{/if}
 				</form>
+			</section>
+
+			<!-- Billing -->
+			<section class="card p-6">
+				<h2 class="flex items-center gap-2 text-sm font-semibold text-gray-900"><Wallet size={16} class="text-gray-400" />Credits</h2>
+				<p class="mt-1 text-sm text-gray-500">Each call uses 1 credit. Chat replies are free.</p>
+				<div class="mt-4 flex flex-wrap items-center gap-4">
+					<span class="font-mono text-3xl font-semibold tabular-nums {billing.balance < 20 ? 'text-red-600' : 'text-gray-900'}">
+						{billing.balance}
+					</span>
+					<span class="text-sm text-gray-400">credits remaining</span>
+					<div class="ml-auto flex gap-2">
+						<button disabled={topBusy} onclick={() => addCredits(100)} class="btn-secondary">+100</button>
+						<button disabled={topBusy} onclick={() => addCredits(500)} class="btn-primary">+500</button>
+					</div>
+				</div>
+				{#if billing.balance < 20}
+					<p class="mt-3 text-sm text-red-600">Low balance — top up to keep placing calls.</p>
+				{/if}
+				{#if billing.ledger.length}
+					<ul class="mt-5 divide-y divide-gray-100 border-t border-gray-100 text-sm">
+						{#each billing.ledger.slice(0, 6) as e (e.created_at + e.reason + e.delta)}
+							<li class="flex items-center justify-between py-2">
+								<span class="text-gray-600">{reasonLabel(e.reason)}</span>
+								<span class="font-mono {e.delta > 0 ? 'text-green-700' : 'text-gray-500'}">
+									{e.delta > 0 ? '+' : ''}{e.delta}
+								</span>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</section>
 
 			<!-- API key -->

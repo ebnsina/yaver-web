@@ -315,6 +315,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/billing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Credit balance and recent ledger */
+        get: operations["getBilling"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/billing/topup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add credits to the org balance */
+        post: operations["topUpCredits"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/analytics/summary": {
         parameters: {
             query?: never;
@@ -518,6 +552,16 @@ export interface components {
         };
         WebhookSecret: {
             secret: string;
+        };
+        LedgerEntry: {
+            delta: number;
+            reason: string;
+            /** Format: date-time */
+            created_at: string;
+        };
+        Billing: {
+            balance: number;
+            ledger: components["schemas"]["LedgerEntry"][];
         };
         Channel: {
             type: string;
@@ -1227,6 +1271,56 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getBilling: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Billing */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Billing"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    topUpCredits: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    amount?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description New balance */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        balance: number;
+                    };
+                };
+            };
             401: components["responses"]["Unauthorized"];
         };
     };

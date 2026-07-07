@@ -1,16 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
-	import { Phone, Check } from '@lucide/svelte';
+	import { Phone, Check, Wallet } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
 	import { getSummary, sendTestCall, type Summary } from '$lib/api/calls';
 	import { getWebhook, listApiKeys } from '$lib/api/settings';
+	import { getBilling } from '$lib/api/billing';
 
 	let summary = $state<Summary | null>(null);
 	let orgName = $state('');
 	let hasKey = $state(false);
 	let webhookOn = $state(false);
+	let balance = $state(0);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 
@@ -20,11 +22,18 @@
 	let lastResult = $state<string | null>(null);
 
 	async function load() {
-		const [u, s, wh, keys] = await Promise.all([me(), getSummary(), getWebhook(), listApiKeys()]);
+		const [u, s, wh, keys, b] = await Promise.all([
+			me(),
+			getSummary(),
+			getWebhook(),
+			listApiKeys(),
+			getBilling()
+		]);
 		orgName = u.org.name;
 		summary = s;
 		webhookOn = wh.configured;
 		hasKey = keys.length > 0;
+		balance = b.balance;
 	}
 
 	$effect(() => {
@@ -44,6 +53,8 @@
 			const r = await sendTestCall(testPhone, testDigit);
 			lastResult = r.result;
 			await load();
+		} catch (e) {
+			lastResult = (e as { status?: number })?.status === 402 ? 'out of credits' : 'failed';
 		} finally {
 			sending = false;
 		}
@@ -79,6 +90,14 @@
 			<p class="text-sm text-red-600">{error}</p>
 		{:else}
 			<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
+
+			{#if balance < 20}
+				<div class="mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+					<Wallet size={16} />
+					Low balance — <span class="font-mono font-semibold">{balance}</span> credits left.
+					<a href="/settings" class="font-medium underline underline-offset-2">Top up</a>
+				</div>
+			{/if}
 
 			{#if remaining > 0}
 				<section class="card mt-6 p-6">
