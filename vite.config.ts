@@ -15,6 +15,11 @@ export default defineConfig({
 			adapter: adapter()
 		})
 	],
+	// @lucide/svelte ships .svelte icon files; keep it in the SSR bundle so Vite
+	// transforms them instead of Node trying to load .svelte natively.
+	ssr: {
+		noExternal: ['@lucide/svelte']
+	},
 	server: {
 		// Proxy the API in dev so the browser talks to one origin (no CORS) and the
 		// httpOnly session cookie is scoped to the web origin. A reverse proxy does
