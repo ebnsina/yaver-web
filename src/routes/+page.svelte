@@ -85,7 +85,7 @@
 				{#each tiles as t (t.label)}
 					<div class="rounded-xl border border-gray-200 bg-white p-5">
 						<p class="text-xs font-medium uppercase tracking-wide text-gray-400">{t.label}</p>
-						<p class="mt-2 text-3xl font-semibold text-gray-900">{t.value}</p>
+						<p class="mt-2 font-mono text-3xl font-semibold tabular-nums text-gray-900">{t.value}</p>
 					</div>
 				{/each}
 			</div>

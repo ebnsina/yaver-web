@@ -59,7 +59,7 @@
 								<td class="px-4 py-3 font-mono text-xs text-gray-500">{c.id.slice(0, 16)}…</td>
 								<td class="px-4 py-3 text-gray-700">{c.direction}</td>
 								<td class="px-4 py-3">
-									<span class="rounded-full px-2 py-0.5 text-xs font-medium {badge(c.status)}"
+									<span class="rounded-full px-2 py-0.5 font-mono text-xs font-medium {badge(c.status)}"
 										>{c.status}</span
 									>
 								</td>
