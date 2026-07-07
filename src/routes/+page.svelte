@@ -26,6 +26,7 @@
 				<nav class="flex flex-1 gap-4 text-sm">
 					<a href="/" class="font-medium text-gray-900">Dashboard</a>
 					<a href="/calls" class="text-gray-500 hover:text-gray-900">Calls</a>
+					<a href="/settings" class="text-gray-500 hover:text-gray-900">Settings</a>
 				</nav>
 				<div class="flex items-center gap-4 text-sm">
 					<span class="text-gray-500">{user.phone}</span>

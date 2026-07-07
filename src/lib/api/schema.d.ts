@@ -89,6 +89,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/settings/api-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create an API key for the org (returned once) */
+        post: operations["createApiKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/settings/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current webhook config (no secret) */
+        get: operations["getWebhook"];
+        put?: never;
+        /** Set the webhook URL; returns a fresh signing secret once */
+        post: operations["setWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events": {
         parameters: {
             query?: never;
@@ -138,6 +173,21 @@ export interface components {
             phone: string;
             email: string;
             name: string;
+        };
+        ApiKeyResult: {
+            api_key: string;
+        };
+        WebhookConfig: {
+            configured: boolean;
+            url?: string;
+            events: string[];
+        };
+        WebhookSet: {
+            url: string;
+            events?: string[];
+        };
+        WebhookSecret: {
+            secret: string;
         };
         Call: {
             id: string;
@@ -303,6 +353,74 @@ export interface operations {
                     "application/json": components["schemas"]["CallList"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    createApiKey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The new key (store it now — not retrievable later) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyResult"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Webhook config */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookConfig"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    setWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookSet"];
+            };
+        };
+        responses: {
+            /** @description Saved; signing secret (store it now) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookSecret"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
             401: components["responses"]["Unauthorized"];
         };
     };

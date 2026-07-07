@@ -29,6 +29,7 @@
 			<nav class="flex gap-4 text-sm">
 				<a href="/" class="text-gray-500 hover:text-gray-900">Dashboard</a>
 				<a href="/calls" class="font-medium text-gray-900">Calls</a>
+				<a href="/settings" class="text-gray-500 hover:text-gray-900">Settings</a>
 			</nav>
 		</div>
 	</header>
