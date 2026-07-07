@@ -3,7 +3,9 @@
 	import { me, logout } from '$lib/api/auth';
 	import { isUnauthorized } from '$lib/api/client';
 
-	let { active }: { active: 'dashboard' | 'calls' | 'customers' | 'flows' | 'settings' } = $props();
+	let {
+		active
+	}: { active: 'dashboard' | 'calls' | 'customers' | 'campaigns' | 'flows' | 'settings' } = $props();
 
 	let phone = $state('');
 	let orgName = $state('');
@@ -30,6 +32,7 @@
 		{ key: 'dashboard', label: 'Dashboard', href: '/' },
 		{ key: 'calls', label: 'Calls', href: '/calls' },
 		{ key: 'customers', label: 'Customers', href: '/customers' },
+		{ key: 'campaigns', label: 'Campaigns', href: '/campaigns' },
 		{ key: 'flows', label: 'Flows', href: '/flows' },
 		{ key: 'settings', label: 'Settings', href: '/settings' }
 	] as const;

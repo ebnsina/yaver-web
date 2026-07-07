@@ -106,6 +106,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/campaigns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The org's campaigns */
+        get: operations["listCampaigns"];
+        put?: never;
+        /** Create a draft campaign */
+        post: operations["createCampaign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/campaigns/{id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dispatch calls to all callable customers */
+        post: operations["startCampaign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/customers": {
         parameters: {
             query?: never;
@@ -361,6 +396,19 @@ export interface components {
         WebhookSecret: {
             secret: string;
         };
+        Campaign: {
+            id: string;
+            name: string;
+            status: string;
+            target_count: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            started_at?: string | null;
+        };
+        CampaignList: {
+            campaigns: components["schemas"]["Campaign"][];
+        };
         Customer: {
             id: string;
             phone: string;
@@ -589,6 +637,83 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CallDetail"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["BadRequest"];
+        };
+    };
+    listCampaigns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Campaigns */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    createCampaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    startCampaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Dispatched */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        queued: number;
+                    };
                 };
             };
             401: components["responses"]["Unauthorized"];
