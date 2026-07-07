@@ -106,6 +106,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The org's customers */
+        get: operations["listCustomers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/customers/{id}/dnd": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Put a customer on do-not-disturb (skip calls) */
+        post: operations["setDnd"];
+        /** Remove a customer from do-not-disturb */
+        delete: operations["clearDnd"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/flows": {
         parameters: {
             query?: never;
@@ -325,6 +360,17 @@ export interface components {
         };
         WebhookSecret: {
             secret: string;
+        };
+        Customer: {
+            id: string;
+            phone: string;
+            name: string;
+            dnd: boolean;
+            /** Format: date-time */
+            created_at: string;
+        };
+        CustomerList: {
+            customers: components["schemas"]["Customer"][];
         };
         FlowSummary: {
             id: string;
@@ -547,6 +593,77 @@ export interface operations {
             };
             401: components["responses"]["Unauthorized"];
             404: components["responses"]["BadRequest"];
+        };
+    };
+    listCustomers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Customers */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    setDnd: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description DND set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        dnd?: boolean;
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    clearDnd: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description DND cleared */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        dnd?: boolean;
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
         };
     };
     listFlows: {
