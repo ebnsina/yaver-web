@@ -2,8 +2,9 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
-	import { ArrowLeft, Play, Plus, Trash2 } from '@lucide/svelte';
+	import { ArrowLeft, LayoutGrid, Play, Plus, Trash2, Workflow } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
+	import FlowDiagram from '$lib/components/FlowDiagram.svelte';
 	import { getFlow, updateFlow, simulateFlow, type FlowDetail, type IVRSpec, type Simulation } from '$lib/api/flows';
 
 	let flow = $state<FlowDetail | null>(null);
@@ -13,9 +14,27 @@
 	let saving = $state(false);
 	let saved = $state(false);
 	let saveError = $state('');
+	let view = $state<'form' | 'diagram'>('form');
 
 	// The keys a branch can fire on.
 	const BRANCH_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'timeout', 'invalid'];
+
+	// Ensure every node has a `say` object — some (e.g. terminal no_input nodes)
+	// ship without one, and the editor binds to say.tts.
+	function normalize(s: IVRSpec): IVRSpec {
+		for (const n of Object.values(s.nodes)) {
+			if (!n.say) n.say = {};
+		}
+		return s;
+	}
+
+	// Jump from the diagram to a node's card in the form editor.
+	function focusNode(name: string) {
+		view = 'form';
+		requestAnimationFrame(() => {
+			document.getElementById(`node-${name}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		});
+	}
 
 	$effect(() => {
 		const id = page.params.id;
@@ -23,7 +42,7 @@
 		getFlow(id)
 			.then((f) => {
 				flow = f;
-				spec = f.spec;
+				spec = normalize(f.spec);
 			})
 			.catch((e) => {
 				if (isUnauthorized(e)) goto('/login');
@@ -161,9 +180,37 @@
 				</div>
 			</div>
 
-			<div class="mt-6 grid gap-6 lg:grid-cols-[1fr_20rem]">
-				<!-- Editor -->
+			<!-- View toggle: structured form vs. visual node diagram -->
+			<div class="mt-5 inline-flex rounded-lg border border-gray-200 bg-white p-0.5 text-sm">
+				<button
+					onclick={() => (view = 'form')}
+					class="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 {view === 'form' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900'}"
+				>
+					<LayoutGrid size={14} />Form
+				</button>
+				<button
+					onclick={() => (view = 'diagram')}
+					class="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 {view === 'diagram' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900'}"
+				>
+					<Workflow size={14} />Diagram
+				</button>
+			</div>
+
+			<div class="mt-4 grid gap-6 lg:grid-cols-[1fr_20rem]">
+				<!-- Editor / Diagram -->
 				<div>
+					{#if view === 'diagram'}
+						<div class="flex items-center gap-2">
+							<label class="text-sm text-gray-500" for="entry-d">Starts at</label>
+							<select id="entry-d" bind:value={spec.entry} class="input">
+								{#each nodeNames as name (name)}<option value={name}>{name}</option>{/each}
+							</select>
+						</div>
+						<div class="mt-4">
+							<FlowDiagram {spec} onselect={focusNode} />
+						</div>
+						<p class="mt-2 text-xs text-gray-400">Click a node to edit it. Boxes are colored by kind: blue = waits for a keypress, green = ends the call.</p>
+					{:else}
 					<div class="flex items-center gap-2">
 						<label class="text-sm text-gray-500" for="entry">Starts at</label>
 						<select id="entry" bind:value={spec.entry} class="input">
@@ -174,7 +221,7 @@
 					<div class="mt-4 space-y-4">
 						{#each nodeNames as name (name)}
 							{@const node = spec.nodes[name]}
-							<section class="card p-5">
+							<section id="node-{name}" class="card scroll-mt-6 p-5">
 								<div class="flex items-center justify-between">
 									<span class="font-mono text-sm font-medium text-gray-900">
 										{name}{#if name === spec.entry}<span class="badge ml-2 bg-gray-100 text-gray-600">entry</span>{/if}
@@ -235,6 +282,7 @@
 						<input bind:value={newNodeName} class="input" placeholder="new node name" onkeydown={(e) => e.key === 'Enter' && addNode()} />
 						<button onclick={addNode} class="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-gray-300"><Plus size={15} />Add node</button>
 					</div>
+					{/if}
 				</div>
 
 				<!-- Simulator -->
