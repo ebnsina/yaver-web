@@ -6,7 +6,7 @@
 	import { me } from '$lib/api/auth';
 	import { getChatSettings, saveChatSettings, type ChatSettings } from '$lib/api/chat';
 	import { Building2, KeyRound, MessageSquare, MessageCircle, Webhook, Wallet } from '@lucide/svelte';
-	import { getBilling, topUp, type Billing } from '$lib/api/billing';
+	import { getBilling, checkout, type Billing } from '$lib/api/billing';
 	import {
 		listChannels,
 		connectChannel,
@@ -92,12 +92,14 @@
 			.finally(() => (loading = false));
 	});
 
-	async function addCredits(amount: number) {
+	// Start a real purchase and hand off to the gateway. Credits land when the
+	// gateway confirms via IPN; on return the reloaded page shows the new balance.
+	async function buyCredits(credits: number) {
 		topBusy = true;
 		try {
-			await topUp(amount);
-			billing = await getBilling();
-		} finally {
+			const { redirect_url } = await checkout(credits);
+			window.location.href = redirect_url;
+		} catch {
 			topBusy = false;
 		}
 	}
@@ -241,8 +243,8 @@
 					</span>
 					<span class="text-sm text-gray-400">credits remaining</span>
 					<div class="ml-auto flex gap-2">
-						<Button variant="outline" disabled={topBusy} onclick={() => addCredits(100)}>+100</Button>
-						<Button disabled={topBusy} onclick={() => addCredits(500)}>+500</Button>
+						<Button variant="outline" disabled={topBusy} onclick={() => buyCredits(100)}>Buy 100</Button>
+						<Button disabled={topBusy} onclick={() => buyCredits(500)}>Buy 500</Button>
 					</div>
 				</div>
 				{#if billing.balance < 20}
