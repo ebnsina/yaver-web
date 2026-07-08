@@ -20,6 +20,13 @@ export default defineConfig({
 	ssr: {
 		noExternal: ['@lucide/svelte']
 	},
+	// Pre-bundle the shadcn runtime deps at startup. Otherwise Vite discovers them
+	// lazily per route and re-optimizes mid-session, and any SSR request caught in
+	// that window returns a 500 ("Internal Error") until the reload — the cause of
+	// the intermittent error page in dev.
+	optimizeDeps: {
+		include: ['clsx', 'tailwind-merge', 'tailwind-variants', 'bits-ui']
+	},
 	server: {
 		// Proxy the API in dev so the browser talks to one origin (no CORS) and the
 		// httpOnly session cookie is scoped to the web origin. A reverse proxy does
