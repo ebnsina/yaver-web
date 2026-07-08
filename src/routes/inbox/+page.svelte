@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import ListSkeleton from "$lib/components/ListSkeleton.svelte";
 	import { ChevronRight } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { listConversations, type Conversation } from '$lib/api/chat';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let conversations = $state<Conversation[] | null>(null);
 	let loading = $state(true);
@@ -36,7 +38,7 @@
 		<p class="mt-1 text-sm text-gray-500">Every customer conversation, across all your channels.</p>
 
 		{#if loading}
-			<p class="mt-4 text-sm text-gray-500">Loading…</p>
+			<ListSkeleton />
 		{:else if !conversations || conversations.length === 0}
 			<div class="card mt-6 p-10 text-center">
 				<p class="text-sm text-gray-500">
@@ -47,7 +49,7 @@
 			<div class="card mt-6 divide-y divide-gray-100 overflow-hidden">
 				{#each conversations as c (c.id)}
 					<a href="/inbox/{c.id}" class="flex items-center gap-4 px-5 py-4 hover:bg-gray-50">
-						<span class="badge {channelBadge(c.channel)} shrink-0">{channelLabel(c.channel)}</span>
+						<Badge variant="secondary" class="{channelBadge(c.channel)} shrink-0">{channelLabel(c.channel)}</Badge>
 						<div class="min-w-0 flex-1">
 							<div class="flex items-center justify-between gap-3">
 								<span class="truncate font-medium text-gray-900">{c.customer}</span>

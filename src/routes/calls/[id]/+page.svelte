@@ -2,8 +2,10 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import ListSkeleton from "$lib/components/ListSkeleton.svelte";
 	import { ArrowLeft } from '@lucide/svelte';
 	import { getCall, type CallDetail } from '$lib/api/calls';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let call = $state<CallDetail | null>(null);
 	let loading = $state(true);
@@ -49,13 +51,13 @@
 		<a href="/calls" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"><ArrowLeft size={15} />Calls</a>
 
 		{#if loading}
-			<p class="mt-4 text-sm text-gray-500">Loading…</p>
+			<ListSkeleton rows={3} />
 		{:else if notFound || !call}
 			<p class="mt-4 text-sm text-gray-500">Call not found.</p>
 		{:else}
 			<div class="mt-3 flex items-center gap-3">
 				<h1 class="font-mono text-xl font-semibold tracking-tight text-gray-900">{call.id}</h1>
-				<span class="badge {badge(call.status)}">{call.status}</span>
+				<Badge variant="secondary" class={badge(call.status)}>{call.status}</Badge>
 			</div>
 
 			<div class="card mt-6 overflow-hidden">

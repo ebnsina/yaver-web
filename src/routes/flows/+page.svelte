@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import ListSkeleton from "$lib/components/ListSkeleton.svelte";
 	import { isUnauthorized } from '$lib/api/client';
 	import { listFlows, type FlowSummary } from '$lib/api/flows';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let flows = $state<FlowSummary[] | null>(null);
 	let loading = $state(true);
@@ -29,18 +32,18 @@
 				<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Flows</h1>
 				<p class="mt-1 text-sm text-gray-500">What your calls say and how they branch.</p>
 			</div>
-			<a href="/flows/new" class="btn-primary">New flow</a>
+			<Button href="/flows/new">New flow</Button>
 		</div>
 
 		{#if loading}
-			<p class="mt-4 text-sm text-gray-500">Loading…</p>
+			<ListSkeleton variant="grid" />
 		{:else if flows}
 			<div class="mt-6 grid gap-4 sm:grid-cols-2">
 				{#each flows as f (f.id)}
 					<a href="/flows/{f.id}" class="card block p-5 transition hover:border-gray-300">
 						<div class="flex items-center justify-between">
 							<span class="font-medium text-gray-900">{f.name}</span>
-							<span class="badge {typeBadge(f.type)}">{f.type}</span>
+							<Badge variant="secondary" class={typeBadge(f.type)}>{f.type}</Badge>
 						</div>
 						<p class="mt-1 text-xs text-gray-400">
 							{f.channel} · v{f.version}{f.active ? ' · active' : ''}

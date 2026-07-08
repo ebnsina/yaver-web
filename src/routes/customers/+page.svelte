@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import ListSkeleton from "$lib/components/ListSkeleton.svelte";
 	import { isUnauthorized } from '$lib/api/client';
 	import { listCustomers, setDND, type Customer } from '$lib/api/customers';
 
@@ -41,7 +42,7 @@
 		</p>
 
 		{#if loading}
-			<p class="mt-4 text-sm text-gray-500">Loading…</p>
+			<ListSkeleton />
 		{:else if !customers || customers.length === 0}
 			<div class="card mt-6 p-10 text-center">
 				<p class="text-sm text-gray-500">No customers yet — they appear as store events arrive.</p>

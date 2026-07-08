@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import ListSkeleton from "$lib/components/ListSkeleton.svelte";
 	import { ChevronRight } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { listCalls, type Call } from '$lib/api/calls';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let calls = $state<Call[] | null>(null);
 	let loading = $state(true);
@@ -46,11 +49,11 @@
 		{/if}
 
 		{#if loading}
-			<p class="mt-4 text-sm text-gray-500">Loading…</p>
+			<ListSkeleton />
 		{:else if !calls || calls.length === 0}
 			<div class="card mt-6 p-10 text-center">
 				<p class="text-sm text-gray-500">No calls yet.</p>
-				<a href="/" class="btn-secondary mt-4">Send a test call</a>
+				<Button variant="outline" href="/" class="mt-4">Send a test call</Button>
 			</div>
 		{:else}
 			<div class="card mt-6 overflow-hidden">
@@ -71,7 +74,7 @@
 								<td class="px-5 py-3.5 font-mono text-xs text-gray-500">{c.id.slice(0, 16)}…</td>
 								<td class="px-5 py-3.5 text-gray-700">{c.direction}</td>
 								<td class="px-5 py-3.5">
-									<span class="badge {badge(c.status)}">{c.status}</span>
+									<Badge variant="secondary" class={badge(c.status)}>{c.status}</Badge>
 								</td>
 								<td class="px-5 py-3.5">
 									<span class="flex items-center gap-2 text-gray-700">

@@ -4,6 +4,9 @@
 	import { ArrowLeft } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { listFlowTemplates, createFlow, type FlowTemplate } from '$lib/api/flows';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let templates = $state<FlowTemplate[] | null>(null);
 	let loading = $state(true);
@@ -69,7 +72,7 @@
 						class="card p-5 text-left transition hover:border-gray-300 {selected?.name === t.name ? 'ring-2 ring-blue-500' : ''}"
 					>
 						<span class="font-medium text-gray-900">{t.title}</span>
-						<span class="badge mt-2 inline-block bg-blue-50 text-blue-700">{t.type}</span>
+						<Badge variant="secondary" class="mt-2 inline-block bg-blue-50 text-blue-700">{t.type}</Badge>
 						<p class="mt-2 text-xs text-gray-500">{t.description}</p>
 					</button>
 				{/each}
@@ -82,10 +85,10 @@
 						The name is how store events route to this flow (e.g. <code>order_confirm</code>).
 					</p>
 					<div class="mt-3 flex flex-wrap items-center gap-3">
-						<input bind:value={name} class="input w-64" placeholder="order_confirm" />
-						<button disabled={creating || !name.trim()} onclick={create} class="btn-primary">
+						<Input bind:value={name} class="w-64" placeholder="order_confirm" />
+						<Button disabled={creating || !name.trim()} onclick={create}>
 							{creating ? 'Creating…' : 'Create flow'}
-						</button>
+						</Button>
 						{#if error}<span class="text-sm text-red-600">{error}</span>{/if}
 					</div>
 				</section>

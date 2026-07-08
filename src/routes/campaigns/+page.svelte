@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import ListSkeleton from "$lib/components/ListSkeleton.svelte";
 	import { Plus, Play } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { listCampaigns, createCampaign, startCampaign, type Campaign } from '$lib/api/campaigns';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let campaigns = $state<Campaign[] | null>(null);
 	let loading = $state(true);
@@ -62,15 +66,15 @@
 
 		<!-- New campaign -->
 		<form class="card mt-6 flex gap-2 p-4" onsubmit={create}>
-			<input bind:value={name} placeholder="Campaign name — e.g. Eid follow-up" class="input flex-1" />
-			<button disabled={creating || !name.trim()} class="btn-primary">
+			<Input bind:value={name} placeholder="Campaign name — e.g. Eid follow-up" class="flex-1" />
+			<Button disabled={creating || !name.trim()}>
 				<Plus size={16} />
 				{creating ? 'Creating…' : 'New campaign'}
-			</button>
+			</Button>
 		</form>
 
 		{#if loading}
-			<p class="mt-4 text-sm text-gray-500">Loading…</p>
+			<ListSkeleton />
 		{:else if campaigns && campaigns.length > 0}
 			<div class="card mt-4 overflow-hidden">
 				<table class="w-full text-left text-sm">
@@ -87,17 +91,17 @@
 						{#each campaigns as c (c.id)}
 							<tr class="hover:bg-gray-50">
 								<td class="px-5 py-3.5 font-medium text-gray-900">{c.name}</td>
-								<td class="px-5 py-3.5"><span class="badge {statusBadge(c.status)}">{c.status}</span></td>
+								<td class="px-5 py-3.5"><Badge variant="secondary" class={statusBadge(c.status)}>{c.status}</Badge></td>
 								<td class="px-5 py-3.5 font-mono tabular-nums text-gray-700">
 									{c.status === 'draft' ? '—' : c.target_count}
 								</td>
 								<td class="px-5 py-3.5 text-gray-500">{when(c.created_at)}</td>
 								<td class="px-5 py-3.5 text-right">
 									{#if c.status === 'draft'}
-										<button disabled={starting[c.id]} onclick={() => start(c)} class="btn-secondary px-3 py-1.5">
+										<Button variant="outline" disabled={starting[c.id]} onclick={() => start(c)} class="px-3 py-1.5">
 											<Play size={14} />
 										{starting[c.id] ? 'Starting…' : 'Start'}
-										</button>
+										</Button>
 									{/if}
 								</td>
 							</tr>

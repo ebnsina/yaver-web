@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { requestOtp, verifyOtp, type ApiError } from '$lib/api/auth';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
 
 	let step = $state<'phone' | 'code'>('phone');
 	let phone = $state('');
@@ -54,17 +56,17 @@
 		<div class="card p-6">
 			{#if step === 'phone'}
 				<form class="space-y-3" onsubmit={sendCode}>
-					<input
+					<Input
 						bind:value={phone}
 						type="tel"
 						placeholder="01712345678"
 						autocomplete="tel"
 						required
-						class="input w-full"
+						class="w-full"
 					/>
-					<button disabled={busy} class="btn-primary w-full">
+					<Button disabled={busy} class="w-full">
 						{busy ? 'Sending…' : 'Send code'}
-					</button>
+					</Button>
 				</form>
 			{:else}
 				<form class="space-y-3" onsubmit={confirm}>
@@ -73,16 +75,16 @@
 							Dev code: <span class="font-mono font-semibold">{devCode}</span>
 						</p>
 					{/if}
-					<input
+					<Input
 						bind:value={code}
 						inputmode="numeric"
 						placeholder="••••••"
 						required
-						class="input w-full text-center text-lg tracking-[0.5em]"
+						class="w-full text-center text-lg tracking-[0.5em]"
 					/>
-					<button disabled={busy} class="btn-primary w-full">
+					<Button disabled={busy} class="w-full">
 						{busy ? 'Verifying…' : 'Verify'}
-					</button>
+					</Button>
 					<button
 						type="button"
 						onclick={() => (step = 'phone')}

@@ -138,7 +138,16 @@
 </script>
 
 <div class="h-[560px] overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
-	<SvelteFlow bind:nodes bind:edges {nodeTypes} {edgeTypes} {onconnect} {ondelete} fitView>
+	<SvelteFlow
+		bind:nodes
+		bind:edges
+		{nodeTypes}
+		{edgeTypes}
+		{onconnect}
+		{ondelete}
+		fitView
+		proOptions={{ hideAttribution: true }}
+	>
 		<Background />
 		<Controls />
 		<Panel position="top-left">

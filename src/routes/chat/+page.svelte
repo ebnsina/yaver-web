@@ -11,6 +11,7 @@
 		type Conversation,
 		type ChatMessage
 	} from '$lib/api/chat';
+	import { Button } from '$lib/components/ui/button/index.js';
 
 	type Msg = { role: string; content: string };
 
@@ -112,11 +113,11 @@
 			</div>
 			<div class="flex items-center gap-2">
 				<div class="relative">
-					<button onclick={() => (historyOpen = !historyOpen)} class="btn-secondary px-3 py-1.5">
+					<Button variant="outline" onclick={() => (historyOpen = !historyOpen)} class="px-3 py-1.5">
 						<History size={15} />
 						History
 						<ChevronDown size={14} class="text-gray-400" />
-					</button>
+					</Button>
 					{#if historyOpen}
 						<button class="fixed inset-0 z-10 cursor-default" aria-label="Close" onclick={() => (historyOpen = false)}></button>
 						<div class="absolute right-0 z-20 mt-2 max-h-80 w-80 overflow-y-auto rounded-xl border border-gray-200 bg-white py-1">
@@ -136,7 +137,7 @@
 						</div>
 					{/if}
 				</div>
-				<button onclick={newChat} class="btn-primary px-3 py-1.5"><Plus size={15} />New chat</button>
+				<Button onclick={newChat} class="px-3 py-1.5"><Plus size={15} />New chat</Button>
 			</div>
 		</div>
 

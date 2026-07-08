@@ -2,9 +2,11 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import ListSkeleton from "$lib/components/ListSkeleton.svelte";
 	import { ArrowLeft } from '@lucide/svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { getMessages, listConversations, type ChatMessage, type Conversation } from '$lib/api/chat';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let messages = $state<ChatMessage[]>([]);
 	let convo = $state<Conversation | null>(null);
@@ -38,7 +40,7 @@
 		<a href="/inbox" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"><ArrowLeft size={15} />Inbox</a>
 
 		{#if loading}
-			<p class="mt-4 text-sm text-gray-500">Loading…</p>
+			<ListSkeleton rows={3} />
 		{:else if notFound}
 			<p class="mt-4 text-sm text-gray-500">Conversation not found.</p>
 		{:else}
@@ -47,15 +49,16 @@
 					{convo?.customer ?? 'Conversation'}
 				</h1>
 				{#if convo}
-					<span
-						class="badge {convo.channel === 'whatsapp'
+					<Badge
+						variant="secondary"
+						class={convo.channel === 'whatsapp'
 							? 'bg-green-50 text-green-700'
 							: convo.channel === 'messenger'
 								? 'bg-blue-50 text-blue-700'
-								: 'bg-gray-100 text-gray-600'}"
+								: 'bg-gray-100 text-gray-600'}
 					>
 						{channelLabel(convo.channel)}
-					</span>
+					</Badge>
 				{/if}
 			</div>
 

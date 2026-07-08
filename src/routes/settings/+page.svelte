@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
+	import ListSkeleton from "$lib/components/ListSkeleton.svelte";
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
 	import { getChatSettings, saveChatSettings, type ChatSettings } from '$lib/api/chat';
@@ -20,6 +21,9 @@
 		renameOrg,
 		listApiKeys
 	} from '$lib/api/settings';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let loading = $state(true);
 
@@ -206,24 +210,23 @@
 		<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Settings</h1>
 
 		{#if loading}
-			<p class="text-sm text-gray-500">Loading…</p>
+			<ListSkeleton rows={3} />
 		{:else}
 			<!-- Organization -->
 			<section class="card p-6">
 				<h2 class="flex items-center gap-2 text-sm font-semibold text-gray-900"><Building2 size={16} class="text-gray-400" />Organization</h2>
 				<p class="mt-1 text-sm text-gray-500">The store name shown in the dashboard.</p>
 				<form class="mt-4 flex gap-2" onsubmit={saveOrg}>
-					<input
+					<Input
 						bind:value={orgName}
 						required
-						class="input flex-1"
+						class="flex-1"
 					/>
-					<button
+					<Button
 						disabled={orgBusy}
-						class="btn-primary"
 					>
 						{orgBusy ? 'Saving…' : 'Save'}
-					</button>
+					</Button>
 					{#if orgSaved}<span class="self-center text-sm text-green-700">Saved</span>{/if}
 				</form>
 			</section>
@@ -238,8 +241,8 @@
 					</span>
 					<span class="text-sm text-gray-400">credits remaining</span>
 					<div class="ml-auto flex gap-2">
-						<button disabled={topBusy} onclick={() => addCredits(100)} class="btn-secondary">+100</button>
-						<button disabled={topBusy} onclick={() => addCredits(500)} class="btn-primary">+500</button>
+						<Button variant="outline" disabled={topBusy} onclick={() => addCredits(100)}>+100</Button>
+						<Button disabled={topBusy} onclick={() => addCredits(500)}>+500</Button>
 					</div>
 				</div>
 				{#if billing.balance < 20}
@@ -265,13 +268,9 @@
 				<p class="mt-1 text-sm text-gray-500">
 					Use this key to send store events to <code class="font-mono">/v1/events</code>.
 				</p>
-				<button
-					onclick={generateKey}
-					disabled={keyBusy}
-					class="mt-4 btn-primary"
-				>
+				<Button onclick={generateKey} disabled={keyBusy} class="mt-4">
 					{keyBusy ? 'Generating…' : 'Generate API key'}
-				</button>
+				</Button>
 				{#if apiKey}
 					{@render reveal('API key', apiKey)}
 				{/if}
@@ -281,7 +280,7 @@
 							<li class="flex items-center justify-between py-2">
 								<span class="flex items-center gap-2">
 									<code class="font-mono text-gray-700">{k.prefix}…</code>
-									<span class="badge {k.kind === 'publishable' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'}">{k.kind}</span>
+									<Badge variant="secondary" class={k.kind === 'publishable' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'}>{k.kind}</Badge>
 								</span>
 								<span class="text-xs text-gray-400">{new Date(k.created_at).toLocaleDateString()}</span>
 							</li>
@@ -302,19 +301,19 @@
 					<div class="grid gap-4 sm:grid-cols-2">
 						<label class="block">
 							<span class="label">Widget title</span>
-							<input bind:value={cs.widget_title} class="input mt-1 w-full" placeholder="Chat with us" />
+							<Input bind:value={cs.widget_title} class="mt-1 w-full" placeholder="Chat with us" />
 						</label>
 						<label class="block">
 							<span class="label">Accent color</span>
 							<div class="mt-1 flex items-center gap-2">
 								<input type="color" bind:value={cs.accent} class="h-9 w-12 rounded-lg border border-gray-300" />
-								<input bind:value={cs.accent} class="input w-full font-mono" />
+								<Input bind:value={cs.accent} class="w-full font-mono" />
 							</div>
 						</label>
 					</div>
 					<label class="block">
 						<span class="label">Welcome message</span>
-						<input bind:value={cs.welcome} class="input mt-1 w-full" placeholder="Hi! 👋 How can I help you today?" />
+						<Input bind:value={cs.welcome} class="mt-1 w-full" placeholder="Hi! 👋 How can I help you today?" />
 					</label>
 					<label class="block">
 						<span class="label">Assistant instructions</span>
@@ -322,23 +321,23 @@
 						<span class="mt-1 block text-xs text-gray-400">Guides how your assistant answers.</span>
 					</label>
 					<div class="flex items-center gap-3">
-						<button disabled={csBusy} class="btn-primary">{csBusy ? 'Saving…' : 'Save appearance'}</button>
+						<Button disabled={csBusy}>{csBusy ? 'Saving…' : 'Save appearance'}</Button>
 						{#if csSaved}<span class="text-sm text-green-700">Saved</span>{/if}
 					</div>
 				</form>
 
 				<p class="mt-6 text-xs font-medium uppercase tracking-wider text-gray-400">Install</p>
-				<button onclick={generatePublishable} disabled={pubBusy} class="mt-3 btn-primary">
+				<Button onclick={generatePublishable} disabled={pubBusy} class="mt-3">
 					{pubBusy ? 'Generating…' : hasPublishable ? 'Regenerate publishable key' : 'Generate publishable key'}
-				</button>
+				</Button>
 
 				{#if pubKey}
 					{@render reveal('Publishable key', pubKey)}
 					<p class="mt-5 text-xs font-medium uppercase tracking-wider text-gray-400">Embed snippet</p>
 					<pre class="mt-2 overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-800"><code>{snippet}</code></pre>
-					<button onclick={loadPreview} disabled={previewLoaded} class="btn-secondary mt-3">
+					<Button variant="outline" onclick={loadPreview} disabled={previewLoaded} class="mt-3">
 						{previewLoaded ? 'Preview loaded → look bottom-right' : 'Load live preview'}
-					</button>
+					</Button>
 				{:else if hasPublishable}
 					<p class="mt-3 text-sm text-gray-500">
 						A publishable key already exists. Regenerate to reveal a full key for embedding.
@@ -358,7 +357,7 @@
 						{#each channels as c (c.type)}
 							<li class="flex items-center justify-between py-3">
 								<span class="flex items-center gap-2">
-									<span class="badge {c.type === 'whatsapp' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}">{c.type}</span>
+									<Badge variant="secondary" class={c.type === 'whatsapp' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}>{c.type}</Badge>
 									<code class="font-mono text-sm text-gray-600">{c.external_id}</code>
 								</span>
 								<button onclick={() => disconnect(c.type)} class="text-sm text-red-600 hover:text-red-700">Disconnect</button>
@@ -376,11 +375,11 @@
 						<option value="whatsapp">WhatsApp</option>
 						<option value="messenger">Messenger</option>
 					</select>
-					<input bind:value={chExternalId} required placeholder={chType === 'whatsapp' ? 'phone_number_id' : 'page_id'} class="input" />
-					<input bind:value={chToken} required placeholder="Access token" class="input" />
-					<input bind:value={chVerify} required placeholder="Verify token" class="input" />
+					<Input bind:value={chExternalId} required placeholder={chType === 'whatsapp' ? 'phone_number_id' : 'page_id'} />
+					<Input bind:value={chToken} required placeholder="Access token" />
+					<Input bind:value={chVerify} required placeholder="Verify token" />
 					<div class="sm:col-span-2">
-						<button disabled={chBusy} class="btn-primary">{chBusy ? 'Connecting…' : 'Connect channel'}</button>
+						<Button disabled={chBusy}>{chBusy ? 'Connecting…' : 'Connect channel'}</Button>
 						{#if chError}<span class="ml-3 text-sm text-red-600">{chError}</span>{/if}
 					</div>
 				</form>
@@ -394,19 +393,16 @@
 					{#if webhookConfigured}<span class="text-green-700">Currently configured.</span>{/if}
 				</p>
 				<form class="mt-4 flex gap-2" onsubmit={saveWebhook}>
-					<input
+					<Input
 						bind:value={webhookUrl}
 						type="url"
 						required
 						placeholder="https://your-store.example/webhooks/yaver"
-						class="input flex-1"
+						class="flex-1"
 					/>
-					<button
-						disabled={hookBusy}
-						class="btn-primary"
-					>
+					<Button disabled={hookBusy}>
 						{hookBusy ? 'Saving…' : 'Save'}
-					</button>
+					</Button>
 				</form>
 				{#if hookError}<p class="mt-2 text-sm text-red-600">{hookError}</p>{/if}
 				{#if secret}

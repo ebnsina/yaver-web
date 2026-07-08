@@ -6,6 +6,9 @@
 	import { isUnauthorized } from '$lib/api/client';
 	import FlowCanvas from '$lib/components/flow/FlowCanvas.svelte';
 	import { getFlow, updateFlow, simulateFlow, type FlowDetail, type IVRSpec, type Simulation } from '$lib/api/flows';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
 
 	let flow = $state<FlowDetail | null>(null);
 	let spec = $state<IVRSpec | null>(null);
@@ -171,12 +174,12 @@
 			<div class="mt-3 flex flex-wrap items-center justify-between gap-3">
 				<div class="flex items-center gap-3">
 					<h1 class="text-2xl font-semibold tracking-tight text-gray-900">{flow.name}</h1>
-					<span class="badge bg-blue-50 text-blue-700">{flow.type}</span>
+					<Badge variant="secondary" class="bg-blue-50 text-blue-700">{flow.type}</Badge>
 				</div>
 				<div class="flex items-center gap-3">
 					{#if saveError}<span class="text-sm text-red-600">{saveError}</span>{/if}
 					{#if saved}<span class="text-sm text-green-700">Saved</span>{/if}
-					<button disabled={saving} onclick={save} class="btn-primary">{saving ? 'Saving…' : 'Save flow'}</button>
+					<Button disabled={saving} onclick={save}>{saving ? 'Saving…' : 'Save flow'}</Button>
 				</div>
 			</div>
 
@@ -226,7 +229,7 @@
 							<section id="node-{name}" class="card scroll-mt-6 p-5">
 								<div class="flex items-center justify-between">
 									<span class="font-mono text-sm font-medium text-gray-900">
-										{name}{#if name === spec.entry}<span class="badge ml-2 bg-gray-100 text-gray-600">entry</span>{/if}
+										{name}{#if name === spec.entry}<Badge variant="secondary" class="ml-2 bg-gray-100 text-gray-600">entry</Badge>{/if}
 									</span>
 									{#if name !== spec.entry}
 										<button onclick={() => removeNode(name)} class="text-gray-400 hover:text-red-600" title="Delete node"><Trash2 size={15} /></button>
@@ -273,7 +276,7 @@
 								{#if node.end}
 									<div class="mt-3 flex items-center gap-2 text-sm">
 										<label class="text-xs font-medium text-gray-500" for="result-{name}">Outcome</label>
-										<input id="result-{name}" bind:value={node.result} class="input py-1" placeholder="confirmed" />
+										<Input id="result-{name}" bind:value={node.result} class="py-1" placeholder="confirmed" />
 									</div>
 								{/if}
 							</section>
@@ -281,7 +284,7 @@
 					</div>
 
 					<div class="mt-4 flex items-center gap-2">
-						<input bind:value={newNodeName} class="input" placeholder="new node name" onkeydown={(e) => e.key === 'Enter' && addNode()} />
+						<Input bind:value={newNodeName} placeholder="new node name" onkeydown={(e) => e.key === 'Enter' && addNode()} />
 						<button onclick={addNode} class="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-gray-300"><Plus size={15} />Add node</button>
 					</div>
 					{/if}
@@ -293,8 +296,8 @@
 						<h2 class="text-sm font-semibold text-gray-900">Test it</h2>
 						<p class="mt-1 text-xs text-gray-500">Enter the keys the customer presses (e.g. <code>1</code>, or <code>timeout</code>). Uses your unsaved edits.</p>
 						<div class="mt-3 flex gap-2">
-							<input bind:value={simInput} class="input flex-1" placeholder="1" onkeydown={(e) => e.key === 'Enter' && runSim()} />
-							<button disabled={simRunning} onclick={runSim} class="btn-primary inline-flex items-center gap-1"><Play size={14} />Run</button>
+							<Input bind:value={simInput} class="flex-1" placeholder="1" onkeydown={(e) => e.key === 'Enter' && runSim()} />
+							<Button disabled={simRunning} onclick={runSim}><Play size={14} />Run</Button>
 						</div>
 
 						{#if sim}
@@ -309,7 +312,7 @@
 							</ol>
 							<div class="mt-3 text-sm">
 								{#if sim.ended}
-									<span class="badge {outcomeColor(sim.status)}">{sim.result || sim.status}</span>
+									<Badge variant="secondary" class={outcomeColor(sim.status)}>{sim.result || sim.status}</Badge>
 								{:else}
 									<span class="text-gray-400">Ran out of inputs — still waiting.</span>
 								{/if}
