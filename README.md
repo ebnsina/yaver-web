@@ -77,10 +77,18 @@ pnpm gen:api      # regenerate src/lib/api/schema.d.ts from the OpenAPI spec
 
 ## Deployment
 
-Uses `@sveltejs/adapter-auto`. For a specific target, swap in the matching
-[SvelteKit adapter](https://svelte.dev/docs/kit/adapters). In production a
-reverse proxy should route `/v1`, `/public`, and `/widget.js` to the API so the
-session cookie stays first-party.
+Uses `@sveltejs/adapter-node` — `pnpm build` emits a standalone server in
+`build/`, run with `pnpm start` (or `node build`). A `Dockerfile` builds a
+production image:
+
+```sh
+docker build -t yaver-web .
+docker run -p 3000:3000 yaver-web
+```
+
+`adapter-node` listens on `$PORT` (default 3000). In production put a reverse
+proxy in front that routes `/v1`, `/public`, and `/widget.js` to the API, so the
+browser stays same-origin and the httpOnly session cookie stays first-party.
 
 ## License
 
