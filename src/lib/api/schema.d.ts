@@ -21,6 +21,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create an email/password account and sign in */
+        post: operations["register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign in with email/password */
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/otp/verify": {
         parameters: {
             query?: never;
@@ -497,8 +531,51 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Add credits to the org balance */
+        /**
+         * Add credits directly (dev-only mock — 403 in prod)
+         * @description Instant credit grant with no payment, gated to non-prod for testing. In production use /v1/billing/checkout instead.
+         */
         post: operations["topUpCredits"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/billing/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a credit purchase and get the gateway redirect URL
+         * @description Records a pending payment and opens a hosted checkout on the configured gateway (SSLCommerz in prod, mock in dev). Credits are granted only when the gateway confirms the charge via IPN at /webhooks/payment.
+         */
+        post: operations["checkoutCredits"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/webhooks/payment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Payment gateway IPN callback (public, gateway-authenticated)
+         * @description Instant Payment Notification from the gateway. The handler authenticates the callback with the gateway (SSLCommerz validation API) before granting credits, and always acks 200 so the gateway does not retry.
+         */
+        post: operations["paymentIPN"];
         delete?: never;
         options?: never;
         head?: never;
@@ -533,6 +610,63 @@ export interface paths {
         get: operations["getAnalyticsOverview"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/activity/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Live activity feed (Server-Sent Events)
+         * @description A long-lived Server-Sent Events stream of the org's live activity — calls completing, chat messages arriving. Each event is a default SSE `message` frame whose JSON `data` carries `{ type, title, detail, at }` (`type` discriminates the kind, e.g. `call.completed`, `chat.message`). The server also sends `: ping` comments as heartbeats. Subscribe with the browser EventSource API.
+         */
+        get: operations["streamActivity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/calls/{id}/transcribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Transcribe a call recording and store the transcript */
+        post: operations["transcribeCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/onboarding/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask the AI setup assistant a question
+         * @description Runs the configured chat model with a setup-aware system prompt. The client sends its known setup progress so the answer references what's left to do.
+         */
+        post: operations["onboardingAsk"];
         delete?: never;
         options?: never;
         head?: never;
@@ -980,6 +1114,90 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+        };
+    };
+    register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: email */
+                    email: string;
+                    password: string;
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Signed in (sets the session cookie) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user_id?: string;
+                        email?: string;
+                    };
+                };
+            };
+            /** @description Email and an 8+ character password are required */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Email already registered */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: email */
+                    email: string;
+                    password: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Signed in (sets the session cookie) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user_id?: string;
+                        email?: string;
+                    };
+                };
+            };
+            /** @description Invalid email or password */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     verifyOtp: {
@@ -1899,6 +2117,67 @@ export interface operations {
                 };
             };
             401: components["responses"]["Unauthorized"];
+            /** @description Not available outside dev */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    checkoutCredits: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    credits?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Redirect the customer here to pay. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        redirect_url: string;
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Gateway could not start the payment */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    paymentIPN: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     getSummary: {
@@ -1938,6 +2217,104 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AnalyticsOverview"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    streamActivity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description An event stream. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    transcribeCall: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    recording_url: string;
+                    locale?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Transcribed and stored */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description recording_url required */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Call not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    onboardingAsk: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    question: string;
+                    progress?: {
+                        store_named?: boolean;
+                        has_api_key?: boolean;
+                        webhook_set?: boolean;
+                        has_flow?: boolean;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Assistant answer */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        answer: string;
+                    };
                 };
             };
             401: components["responses"]["Unauthorized"];

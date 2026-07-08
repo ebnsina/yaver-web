@@ -1,5 +1,4 @@
-// Onboarding assistant. Plain fetch because the endpoint postdates the generated
-// schema; regenerate with `pnpm gen:api` to fold it into the typed client.
+import { api, unwrap } from './client';
 
 export interface OnboardingProgress {
 	store_named: boolean;
@@ -8,16 +7,5 @@ export interface OnboardingProgress {
 	has_flow: boolean;
 }
 
-export async function askOnboarding(
-	question: string,
-	progress: OnboardingProgress
-): Promise<{ answer: string }> {
-	const res = await fetch('/v1/onboarding/ask', {
-		method: 'POST',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ question, progress })
-	});
-	if (!res.ok) throw { status: res.status, error: 'assistant unavailable' };
-	return res.json();
-}
+export const askOnboarding = (question: string, progress: OnboardingProgress) =>
+	unwrap(api.POST('/v1/onboarding/ask', { body: { question, progress } }));
