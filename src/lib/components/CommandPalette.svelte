@@ -19,28 +19,28 @@
 	// ⌘K / Ctrl+K shortcut. Filtering + arrow-key nav come from the Command primitive.
 	let { open = $bindable(false) }: { open?: boolean } = $props();
 
-	type Item = { label: string; icon: typeof Phone; color: string; keywords?: string; href: string };
+	type Item = { label: string; icon: typeof Phone; keywords?: string; href: string };
 
 	const groups: { heading: string; items: Item[] }[] = [
 		{
 			heading: 'Navigate',
 			items: [
-				{ label: 'Dashboard', icon: LayoutDashboard, color: 'text-brand-600', href: '/' },
-				{ label: 'Calls', icon: Phone, color: 'text-blue-600', href: '/calls' },
-				{ label: 'Chat', icon: MessageCircle, color: 'text-emerald-600', href: '/chat' },
-				{ label: 'Inbox', icon: Inbox, color: 'text-amber-600', href: '/inbox' },
-				{ label: 'Customers', icon: Users, color: 'text-pink-600', href: '/customers' },
-				{ label: 'Campaigns', icon: Megaphone, color: 'text-orange-600', href: '/campaigns' },
-				{ label: 'Flows', icon: Workflow, color: 'text-cyan-600', href: '/flows' },
-				{ label: 'Settings', icon: Settings, color: 'text-slate-600', href: '/settings' },
-				{ label: 'Docs & help', icon: BookOpen, color: 'text-violet-600', keywords: 'documentation guide support', href: '/docs' }
+				{ label: 'Dashboard', icon: LayoutDashboard, href: '/' },
+				{ label: 'Calls', icon: Phone, href: '/calls' },
+				{ label: 'Chat', icon: MessageCircle, href: '/chat' },
+				{ label: 'Inbox', icon: Inbox, href: '/inbox' },
+				{ label: 'Customers', icon: Users, href: '/customers' },
+				{ label: 'Campaigns', icon: Megaphone, href: '/campaigns' },
+				{ label: 'Flows', icon: Workflow, href: '/flows' },
+				{ label: 'Settings', icon: Settings, href: '/settings' },
+				{ label: 'Docs & help', icon: BookOpen, keywords: 'documentation guide support', href: '/docs' }
 			]
 		},
 		{
 			heading: 'Actions',
 			items: [
-				{ label: 'New flow', icon: Plus, color: 'text-cyan-600', keywords: 'create build ivr', href: '/flows/new' },
-				{ label: 'Top up credits', icon: Wallet, color: 'text-green-600', keywords: 'billing balance pay', href: '/settings' }
+				{ label: 'New flow', icon: Plus, keywords: 'create build ivr', href: '/flows/new' },
+				{ label: 'Top up credits', icon: Wallet, keywords: 'billing balance pay', href: '/settings' }
 			]
 		}
 	];
@@ -69,7 +69,7 @@
 				{#each g.items as it (it.label)}
 					{@const Icon = it.icon}
 					<Command.Item value={`${it.label} ${it.keywords ?? ''}`} onSelect={() => run(it.href)}>
-						<Icon class={it.color} />
+						<Icon class="text-muted-foreground" />
 						<span>{it.label}</span>
 					</Command.Item>
 				{/each}
