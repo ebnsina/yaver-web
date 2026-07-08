@@ -4,6 +4,7 @@
 	import { Phone, Check, Wallet, PhoneCall, CircleCheckBig, TrendingUp, CalendarClock } from '@lucide/svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import LiveActivity from '$lib/components/LiveActivity.svelte';
+	import OnboardingAssistant from '$lib/components/OnboardingAssistant.svelte';
 	import { isUnauthorized } from '$lib/api/client';
 	import { me } from '$lib/api/auth';
 	import { getSummary, sendTestCall, type Summary } from '$lib/api/calls';
@@ -72,6 +73,13 @@
 		{ label: 'Connect a webhook', done: webhookOn, href: '/settings' }
 	]);
 	const remaining = $derived(steps.filter((s) => !s.done).length);
+
+	const onboardingProgress = $derived({
+		store_named: steps[0].done,
+		has_flow: steps[1].done,
+		has_api_key: steps[2].done,
+		webhook_set: steps[3].done
+	});
 
 	const tiles = $derived(
 		summary
@@ -161,6 +169,10 @@
 						{/each}
 					</ul>
 				</section>
+
+				<div class="mt-6">
+					<OnboardingAssistant progress={onboardingProgress} />
+				</div>
 			{/if}
 
 			<div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
